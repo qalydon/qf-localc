@@ -158,13 +158,18 @@ print("cache DB:", QConfiguration.qf_cache_db)
 # d = qf_wsj.get_historical_price_data("aapl", "", "2018-11-30")
 # print("aapl", d)
 
-import qf_hist_quote
+# import qf_hist_quote
+# ticker = "ibm"
+# d = qf_hist_quote.opening_price(ticker, "etf", "2018-11-30")
+# print("Open:", d)
+# d = qf_hist_quote.closing_price(ticker, "etf", "2018-11-30")
+# print("Close:", d)
+# d = qf_hist_quote.high_price(ticker, "etf", "2018-11-30")
+# print("High:", d)
+# d = qf_hist_quote.low_price(ticker, "etf", "2018-11-30")
+# print("Low:", d)
+
+import qf_iex
 ticker = "ibm"
-d = qf_hist_quote.opening_price(ticker, "etf", "2018-11-30")
-print("Open:", d)
-d = qf_hist_quote.closing_price(ticker, "etf", "2018-11-30")
-print("Close:", d)
-d = qf_hist_quote.high_price(ticker, "etf", "2018-11-30")
-print("High:", d)
-d = qf_hist_quote.low_price(ticker, "etf", "2018-11-30")
-print("Low:", d)
+d = qf_iex.get_historical_price_data(ticker, "", "2018-12-04")
+print(d)
