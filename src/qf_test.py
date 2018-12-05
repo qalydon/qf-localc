@@ -147,17 +147,24 @@ print("cache DB:", QConfiguration.qf_cache_db)
 # from qf_cache_db import CacheDB
 # print(CacheDB.lookup_closing_price_by_date("AAPL", "2018-11-30")["Close"])
 
-import qf_stooq
-try:
-    pd = qf_stooq.get_historical_price_data("AAPL", "2018-11-30")
-    print(json.dumps(pd, indent=4))
-except Exception as ex:
-    print(ex)
+# import qf_stooq
+# try:
+#     pd = qf_stooq.get_historical_price_data("AAPL", "2018-11-30")
+#     print(json.dumps(pd, indent=4))
+# except Exception as ex:
+#     print(ex)
 
 # import qf_wsj
 # d = qf_wsj.get_historical_price_data("aapl", "", "2018-11-30")
 # print("aapl", d)
 
-# import qf_hist_quote
-# d = qf_hist_quote.closing_quote("mint", "etf", "2018-11-30")
-# print(d)
+import qf_hist_quote
+ticker = "ibm"
+d = qf_hist_quote.opening_price(ticker, "etf", "2018-11-30")
+print("Open:", d)
+d = qf_hist_quote.closing_price(ticker, "etf", "2018-11-30")
+print("Close:", d)
+d = qf_hist_quote.high_price(ticker, "etf", "2018-11-30")
+print("High:", d)
+d = qf_hist_quote.low_price(ticker, "etf", "2018-11-30")
+print("Low:", d)

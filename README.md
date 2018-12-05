@@ -29,6 +29,11 @@ uses data source A and this source changes, the implementation of
 QFClosingPrice can be changed to use data source B without changing 
 any using spreadsheet.
 
+### Current Data Sources
+
+* [Wall Street Journal](wsj.com)
+* [Stooq](stooq.com)
+
 ### LibreOffice Compatibility
 The LOCalc addin works on the Windows, macOS and Ubuntu versions of
 [LibreOffice (version >= 5.0)](https://www.libreoffice.org/).
@@ -71,7 +76,10 @@ can be used.
 ## LOCalc Functions
 The addin provides a number of functions for retrieving market data.
 
+* Opening price
 * Closing price
+* High price of day
+* Low price of day
 
 ### QFClosingPrice
 Returns the closing price for a ticker symbol on a given date.
@@ -86,6 +94,48 @@ because some sources require it as a ticker symbol qualifier and it is
 difficult to determine a symbol's category from its ticker symbol. 
 
 date: The date for the closing price in ISO format (YYYY-MM-DD)
+
+### QFOpeningPrice
+Returns the opening price for a ticker symbol on a given date.
+```
+=QFOpeningPrice(symbol, category, date)
+```
+
+symbol: The ticker symbol for the equity whose opening price is to be retrieved.
+
+category: stock, mutf or mututalfund, etf, index. The category is necessary
+because some sources require it as a ticker symbol qualifier and it is 
+difficult to determine a symbol's category from its ticker symbol. 
+
+date: The date for the opening price in ISO format (YYYY-MM-DD)
+
+### QFHighPrice
+Returns the high price for a ticker symbol on a given date.
+```
+=QFHighPrice(symbol, category, date)
+```
+
+symbol: The ticker symbol for the equity whose price is to be retrieved.
+
+category: stock, mutf or mututalfund, etf, index. The category is necessary
+because some sources require it as a ticker symbol qualifier and it is 
+difficult to determine a symbol's category from its ticker symbol. 
+
+date: The date for the price in ISO format (YYYY-MM-DD)
+
+### QFLowPrice
+Returns the low price for a ticker symbol on a given date.
+```
+=QFLowPrice(symbol, category, date)
+```
+
+symbol: The ticker symbol for the equity whose price is to be retrieved.
+
+category: stock, mutf or mututalfund, etf, index. The category is necessary
+because some sources require it as a ticker symbol qualifier and it is 
+difficult to determine a symbol's category from its ticker symbol. 
+
+date: The date for the price in ISO format (YYYY-MM-DD)
 
 ## References
 * [LibreOffice Web Site](https://www.libreoffice.org/)

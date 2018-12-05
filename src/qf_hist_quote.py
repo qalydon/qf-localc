@@ -38,13 +38,14 @@ wsj_category_map = {
     "index": "index"
 }
 
-def closing_price(ticker, category, for_date):
-    """
 
+def __get_price_record(ticker, category, for_date):
+    """
+    Return the full cache record for given symbol, date
     :param ticker: Equity ticker symbol
     :param category: Required for WSJ. Not used with Stooq
     :param for_date: Either ISO format or LibreOffice date as a float
-    :return: The closing price for the given date
+    :return: The cache record as a dict
     """
     # Normalize date
     for_date = normalize_date(for_date)
@@ -54,7 +55,7 @@ def closing_price(ticker, category, for_date):
         if category.lower() in wsj_category_map.keys():
             category = wsj_category_map[category.lower()]
         else:
-            return "Invalid category"
+            raise ValueError("Invalid category")
     else:
         category = ""
 
@@ -63,16 +64,80 @@ def closing_price(ticker, category, for_date):
     cr = CacheDB.lookup_closing_price_by_date(ticker, for_date)
     if cr:
         logger.debug("Cache hit for %s %s", ticker, for_date)
-        return cr["Close"]
+        # Turn row into a dict
+        r = {}
+        for key in cr.keys():
+            r[key.lower()] = cr[key]
+        return r
 
     # Try WSJ
+    r = qf_wsj.get_historical_price_data(ticker, category, for_date)
+    if r:
+        # Cache result
+        CacheDB.insert_ohlc_price(ticker, for_date, r["open"], r["high"], r["low"], r["close"], 0, 0.0)
+        return r
+
+    return None
+
+
+def __get_price(ticker, category, for_date, price_type):
+    """
+
+    :param ticker: Equity ticker symbol
+    :param category: Required for WSJ. Not used with Stooq
+    :param for_date: Either ISO format or LibreOffice date as a float
+    :param price_type: open, close, high, low
+    :return: The closing price for the given date
+    """
     try:
-        r = qf_wsj.get_historical_price_data(ticker, category, for_date)
+        r = __get_price_record(ticker, category, for_date)
         if r:
-            # Cache result
-            CacheDB.insert_ohlc_price(ticker, for_date, r["open"], r["high"], r["low"], r["close"], 0, 0.0)
-            return r['close']
+            return r[price_type]
     except Exception as ex:
         return str(ex)
 
     return "N/A"
+
+
+def closing_price(ticker, category, for_date):
+    """
+
+    :param ticker: Equity ticker symbol
+    :param category: Required for WSJ. Not used with Stooq
+    :param for_date: Either ISO format or LibreOffice date as a float
+    :return: The closing price for the given date
+    """
+    return __get_price(ticker, category, for_date, "close")
+
+
+def opening_price(ticker, category, for_date):
+    """
+
+    :param ticker: Equity ticker symbol
+    :param category: Required for WSJ. Not used with Stooq
+    :param for_date: Either ISO format or LibreOffice date as a float
+    :return: The closing price for the given date
+    """
+    return __get_price(ticker, category, for_date, "open")
+
+
+def high_price(ticker, category, for_date):
+    """
+
+    :param ticker: Equity ticker symbol
+    :param category: Required for WSJ. Not used with Stooq
+    :param for_date: Either ISO format or LibreOffice date as a float
+    :return: The closing price for the given date
+    """
+    return __get_price(ticker, category, for_date, "high")
+
+
+def low_price(ticker, category, for_date):
+    """
+
+    :param ticker: Equity ticker symbol
+    :param category: Required for WSJ. Not used with Stooq
+    :param for_date: Either ISO format or LibreOffice date as a float
+    :return: The closing price for the given date
+    """
+    return __get_price(ticker, category, for_date, "low")

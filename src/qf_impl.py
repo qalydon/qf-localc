@@ -72,8 +72,20 @@ class QFImpl(unohelper.Base, XQFinance):
         return _qf_version
 
     def QFClosingPrice(self, symbol, category, fordate):
-        logger.debug("QFClosingQuote called %s %s %s", symbol, category, fordate)
+        logger.debug("QFClosingPrice called %s %s %s", symbol, category, fordate)
         return qf_hist_quote.closing_price(symbol, category, fordate)
+
+    def QFOpeningPrice(self, symbol, category, fordate):
+        logger.debug("QFOpeningPrice called %s %s %s", symbol, category, fordate)
+        return qf_hist_quote.opening_price(symbol, category, fordate)
+
+    def QFHighPrice(self, symbol, category, fordate):
+        logger.debug("QFHighPrice called %s %s %s", symbol, category, fordate)
+        return qf_hist_quote.high_price(symbol, category, fordate)
+
+    def QFLowPrice(self, symbol, category, fordate):
+        logger.debug("QFLowPrice called %s %s %s", symbol, category, fordate)
+        return qf_hist_quote.low_price(symbol, category, fordate)
 
 
 #

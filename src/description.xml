@@ -3,7 +3,7 @@
         <ns1:LibreOffice-minimal-version value="5.0" ns0:name="LibreOffice 5.0" />
     </ns0:dependencies>
     <ns0:identifier value="com.qf.api.localc" />
-    <ns0:version value="0.0.13" />
+    <ns0:version value="0.0.15" />
     <ns0:display-name>
         <ns0:name lang="en">Qalydon Financial Extension</ns0:name>
     </ns0:display-name>

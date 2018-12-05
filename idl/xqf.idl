@@ -9,8 +9,11 @@ module com {
                 {
                   // Returns extension version
                   any QFVersion();
-                  // Returns an EOD price for a give date
+                  // Returns an EOD price for a given date
                   any QFClosingPrice( [in] string symbol, [in] string category, [in] any fordate );
+                  any QFOpeningPrice( [in] string symbol, [in] string category, [in] any fordate );
+                  any QFHighPrice( [in] string symbol, [in] string category, [in] any fordate );
+                  any QFLowPrice( [in] string symbol, [in] string category, [in] any fordate );
                 };
             };
         };
