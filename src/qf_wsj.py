@@ -70,6 +70,9 @@ def get_historical_price_data(ticker, category, for_date):
             # This code depends on the first line of the result being the column names
             # and the second line being the data for the date. No attempt is made to
             # go beyond the second line of the response.
+            # Example
+            # Date, Open, High, Low, Close
+            # 11/30/18, 10.14, 10.14, 10.14, 10.14
             lines = csv_data.splitlines()
             a = []
             for line in lines:

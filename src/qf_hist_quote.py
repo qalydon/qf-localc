@@ -70,7 +70,7 @@ def closing_price(ticker, category, for_date):
         r = qf_wsj.get_historical_price_data(ticker, category, for_date)
         if r:
             # Cache result
-            CacheDB.insert_closing_price(ticker, for_date, r['close'])
+            CacheDB.insert_ohlc_price(ticker, for_date, r["open"], r["high"], r["low"], r["close"], 0, 0.0)
             return r['close']
     except Exception as ex:
         return str(ex)

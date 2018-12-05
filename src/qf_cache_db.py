@@ -43,6 +43,8 @@ class CacheDB:
             os.makedirs(file_path)
 
         # If DB does not exist, create it
+        # TODO Move this out to its own function. Consider putting
+        # initialization SQL in a text file.
         if not os.path.exists(full_file_path):
             logger.info("Create database")
             conn = sqlite3.connect(full_file_path)
@@ -76,9 +78,7 @@ class CacheDB:
     @classmethod
     def insert_closing_price(cls, symbol, tgtdate, close):
         """
-        Insert a new cache record in the cache DB. The Google service does not
-        produce all data values for every symbol (e.g. mutual funds only have closing prices).
-        to preserve backward compatiblity in the cache DB zero values are used for unavailable values.
+        Insert a new cache record in the cache DB.
         :param symbol:
         :param tgtdate:
         :param close:
@@ -87,5 +87,26 @@ class CacheDB:
         conn = cls.__open_yh_cache()
         # print ("Cache data:", symbol, tgtdate, close)
         conn.execute("INSERT INTO SymbolDate values (?,?,?,?,?,?,?,?)", [symbol, tgtdate, 0, 0, 0, close, 0, 0])
+        conn.commit()
+        conn.close()
+
+    @classmethod
+    def insert_ohlc_price(cls, symbol, tgtdate, open_price, high_price, low_price, closing_price, volume, adj_closing_price):
+        """
+        Insert an OHLC record into the cache DB. Missing values should be 0.0 or 0.
+        :param symbol:
+        :param tgtdate: yyyy-mm-dd
+        :param open_price: float
+        :param high_price: float
+        :param low_price: float
+        :param closing_price: float
+        :param volume: integer
+        :param adj_closing_price: float
+        :return: None
+        """
+        conn = cls.__open_yh_cache()
+        # print ("Cache data:", symbol, tgtdate, close)
+        conn.execute("INSERT INTO SymbolDate values (?,?,?,?,?,?,?,?)",
+                     [symbol, tgtdate, open_price, high_price, low_price, closing_price, volume, adj_closing_price])
         conn.commit()
         conn.close()
