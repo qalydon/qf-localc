@@ -71,7 +71,7 @@ class QFImpl(unohelper.Base, XQFinance):
         logger.debug("QFVersion called %s", _qf_version)
         return _qf_version
 
-    def QFClosingQuote(self, symbol, category, fordate):
+    def QFClosingPrice(self, symbol, category, fordate):
         logger.debug("QFClosingQuote called %s %s %s", symbol, category, fordate)
         return qf_hist_quote.closing_price(symbol, category, fordate)
 

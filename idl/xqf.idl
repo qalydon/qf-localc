@@ -10,7 +10,7 @@ module com {
                   // Returns extension version
                   any QFVersion();
                   // Returns an EOD price for a give date
-                  any QFClosingQuote( [in] string symbol, [in] string category, [in] any fordate );
+                  any QFClosingPrice( [in] string symbol, [in] string category, [in] any fordate );
                 };
             };
         };

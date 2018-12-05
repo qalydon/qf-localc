@@ -120,7 +120,7 @@ xcu = XCUFile("com.qf.api.localc.python.QFImpl", "XQFinance")
 xcu.add_function("QFVersion", "Get extension version",
                  [
                  ])
-xcu.add_function("QFClosingQuote", "Get a closing quote for a date",
+xcu.add_function("QFClosingPrice", "Get a closing quote for a date",
                  [
                      ('symbol', 'The stock ticker symbol for the quote'),
                      ('category', 'stock, etf, mutf, or index'),
