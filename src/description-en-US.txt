@@ -1,0 +1,3 @@
+The Qalydon Financial Extension enables you to create LibreOffice Calc spreadsheets with stock market data pulled from various free sources.
+
+More information can be found at http://github.com/qalydon/qf-localc.

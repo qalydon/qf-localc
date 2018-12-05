@@ -1,0 +1,18 @@
+// com.qf.api.localc
+// Naming convention: https://wiki.openoffice.org/wiki/Documentation/DevGuide/AppendixA/General_Design_Rules
+
+module com {
+    module qf {
+        module api {
+            module localc {
+                interface XQFinance
+                {
+                  // Returns extension version
+                  any QFVersion();
+                  // Returns an EOD price for a give date
+                  any QFClosingQuote( [in] string symbol, [in] string category, [in] any fordate );
+                };
+            };
+        };
+    };
+};

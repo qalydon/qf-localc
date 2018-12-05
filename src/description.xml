@@ -1,0 +1,16 @@
+<ns0:description xmlns:ns0="http://openoffice.org/extensions/description/2006" xmlns:ns1="http://libreoffice.org/extensions/description/2011" xmlns:ns2="http://www.w3.org/1999/xlink">
+    <ns0:dependencies>
+        <ns1:LibreOffice-minimal-version value="5.0" ns0:name="LibreOffice 5.0" />
+    </ns0:dependencies>
+    <ns0:identifier value="com.qf.api.localc" />
+    <ns0:version value="0.0.12" />
+    <ns0:display-name>
+        <ns0:name lang="en">Qalydon Financial Extension</ns0:name>
+    </ns0:display-name>
+    <ns0:publisher>
+        <ns0:name lang="en" ns2:href="https://github.com/dhocker/qf-localc">Qalydon</ns0:name>
+	</ns0:publisher>
+	<ns0:extension-description>
+		<ns0:src lang="en" ns2:href="description-en-US.txt" />
+	</ns0:extension-description>
+</ns0:description>
