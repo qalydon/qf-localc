@@ -90,7 +90,7 @@ The location of the configuration file depends on your operating system.
 | macOS | /Users/username/libreoffice/qf/qf.conf |
 | Ubuntu | /home/username/libreoffice/qf/qf.conf |
 
-###Data Sources 
+### Data Sources 
 
 | datasource | Description |
 |:-----|:-------|
