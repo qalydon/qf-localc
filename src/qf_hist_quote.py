@@ -19,7 +19,8 @@ import json
 from qf_app_logger import AppLogger
 from qf_extn_helper import normalize_date
 from qf_cache_db import CacheDB
-import qf_wsj
+from qf_configuration import QConfiguration
+# import qf_wsj
 import qf_stooq
 # import datetime
 # import time
@@ -28,15 +29,6 @@ import qf_stooq
 
 the_app_logger = AppLogger("qf-extension")
 logger = the_app_logger.getAppLogger()
-
-# For WSJ
-wsj_category_map = {
-    "stock": "",
-    "mutf": "mutualfund",
-    "mutualfund": "mutualfund",
-    "etf": "etf",
-    "index": "index"
-}
 
 
 def __get_price_record(ticker, category, for_date):
@@ -50,15 +42,6 @@ def __get_price_record(ticker, category, for_date):
     # Normalize date
     for_date = normalize_date(for_date)
 
-    # Validate/translate category
-    if category:
-        if category.lower() in wsj_category_map.keys():
-            category = wsj_category_map[category.lower()]
-        else:
-            raise ValueError("Invalid category")
-    else:
-        category = ""
-
     # Cache look up
     ticker = ticker.upper()
     cr = CacheDB.lookup_closing_price_by_date(ticker, for_date)
@@ -70,11 +53,12 @@ def __get_price_record(ticker, category, for_date):
             r[key.lower()] = cr[key]
         return r
 
-    # Try WSJ
-    r = qf_wsj.get_historical_price_data(ticker, category, for_date)
+    # Try data source
+    r = QConfiguration.qf_data_source_obj.get_historical_price_data(ticker, category, for_date)
     if r:
         # Cache result
-        CacheDB.insert_ohlc_price(ticker, for_date, r["open"], r["high"], r["low"], r["close"], 0, 0.0)
+        CacheDB.insert_ohlc_price(ticker, for_date,
+                                  r["open"], r["high"], r["low"], r["close"], r["volume"], 0.0)
         return r
 
     return None
@@ -141,3 +125,14 @@ def low_price(ticker, category, for_date):
     :return: The closing price for the given date
     """
     return __get_price(ticker, category, for_date, "low")
+
+
+def daily_volume(ticker, category, for_date):
+    """
+
+    :param ticker: Equity ticker symbol
+    :param category: Required for WSJ. Not used with Stooq
+    :param for_date: Either ISO format or LibreOffice date as a float
+    :return: The closing price for the given date
+    """
+    return __get_price(ticker, category, for_date, "volume")

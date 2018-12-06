@@ -22,6 +22,7 @@ import json
 from qf_app_logger import AppLogger
 from qf_configuration import QConfiguration
 from qf_extn_helper import qf_version
+from qf_hist_quote import closing_price, opening_price, high_price, low_price, daily_volume
 # import datetime
 # import time
 # import json
@@ -169,7 +170,9 @@ print("cache DB:", QConfiguration.qf_cache_db)
 # d = qf_hist_quote.low_price(ticker, "etf", "2018-11-30")
 # print("Low:", d)
 
-import qf_iex
-ticker = "ibm"
-d = qf_iex.get_historical_price_data(ticker, "", "2018-12-04")
-print(d)
+ticker = "mmm"
+opening = opening_price(ticker, "", "2018-12-04")
+closing = closing_price(ticker, "", "2018-12-04")
+volume = daily_volume(ticker, "", "2018-12-04")
+
+print(opening, closing, volume)

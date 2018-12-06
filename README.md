@@ -67,6 +67,52 @@ Select it.
 add-in before installing an update. Othwerwise, your results may be
 unpredictable.**
 
+## Configuration File
+The extension can be customized using its configuration file. You do not have to 
+create a configuration file. The extension will create a default configuration file
+the first time it is used within LibreOffice.
+
+The content of the configuration file is JSON and looks something like this (showing defaults).
+```
+{
+    "loglevel": "debug",
+	"cachedb": "~/libreoffice/qf/qf-cache-db.sqlite3",
+	"datasource": "wsj"
+}
+```
+
+| Key | Value |
+|:-----|:-------|
+| loglevel | error, warning, info, debug (default) |
+| cachedb | Historical data is persistently cached in a SQLite database. This tells the extension what database to create and use.
+| datasource | The extension can use several sources for data. See the [list](#data-sources) below.
+
+The location of the configuration file depends on your operating system.
+
+| OS | Location |
+|----|----------|
+| Windows | C:\Users\username\AppData\Local\libreoffice\qf\intrinio.conf |
+| macOS | /Users/username/libreoffice/qf/qf.conf |
+| Ubuntu | /home/username/libreoffice/qf/qf.conf |
+
+###Data Sources 
+| datasource | Description |
+|:-----|:-------|
+| wsj | Wall Street Journal web site (default) |
+| iex | IEX Trading web service |
+| stooq | stooq.com web site |
+
+A word about data sources. 
+
+The listed data sources are free. However, they reserve the right
+to limit your use of their service. Therefore, your mileage may vary. In particular I have 
+experienced problems with Stooq leading me to believe the site may have black listed my
+IP address.
+
+Also, each data source **does not** support every kind of ticker symbol 
+(stock, mutual fund, ETF, index). The WSJ data source is the most comprehensive while
+the other sources typically only support stocks and ETFs (e.g. IEX and Stooq).
+
 ## Example Files
 You can find a number of example files in the
 [examples folder](https://github.com/qalydon/qf-localc/tree/master/examples).
