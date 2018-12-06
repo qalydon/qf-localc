@@ -29,11 +29,6 @@ uses data source A and this source changes, the implementation of
 QFClosingPrice can be changed to use data source B without changing 
 any using spreadsheet.
 
-### Current Data Sources
-
-* [Wall Street Journal](wsj.com)
-* [Stooq](stooq.com)
-
 ### LibreOffice Compatibility
 The LOCalc addin works on the Windows, macOS and Ubuntu versions of
 [LibreOffice (version >= 5.0)](https://www.libreoffice.org/).
@@ -96,6 +91,7 @@ The location of the configuration file depends on your operating system.
 | Ubuntu | /home/username/libreoffice/qf/qf.conf |
 
 ###Data Sources 
+
 | datasource | Description |
 |:-----|:-------|
 | wsj | Wall Street Journal web site (default) |
