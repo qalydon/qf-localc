@@ -87,6 +87,10 @@ class QFImpl(unohelper.Base, XQFinance):
         logger.debug("QFLowPrice called %s %s %s", symbol, category, fordate)
         return qf_hist_quote.low_price(symbol, category, fordate)
 
+    def QFDayVolume(self, symbol, category, fordate):
+        logger.debug("QFDayVolume called %s %s %s", symbol, category, fordate)
+        return qf_hist_quote.daily_volume(symbol, category, fordate)
+
 
 #
 # Boiler plate code for adding an instance of the extension

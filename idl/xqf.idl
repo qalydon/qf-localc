@@ -14,6 +14,7 @@ module com {
                   any QFOpeningPrice( [in] string symbol, [in] string category, [in] any fordate );
                   any QFHighPrice( [in] string symbol, [in] string category, [in] any fordate );
                   any QFLowPrice( [in] string symbol, [in] string category, [in] any fordate );
+                  any QFDayVolume( [in] string symbol, [in] string category, [in] any fordate );
                 };
             };
         };

@@ -124,25 +124,31 @@ xcu.add_function("QFVersion", "Get extension version",
                  ])
 xcu.add_function("QFClosingPrice", "Get the closing price for a date",
                  [
-                     ('symbol', 'The stock ticker symbol for the quote'),
+                     ('symbol', 'The stock ticker symbol for the price'),
                      ('category', 'stock, etf, mutf, or index'),
                      ('fordate', 'The date YYYY-MM-DD')
                  ])
 xcu.add_function("QFOpeningPrice", "Get the opening price for a date",
                  [
-                     ('symbol', 'The stock ticker symbol for the quote'),
+                     ('symbol', 'The stock ticker symbol for the price'),
                      ('category', 'stock, etf, mutf, or index'),
                      ('fordate', 'The date YYYY-MM-DD')
                  ])
 xcu.add_function("QFHighPrice", "Get the high price for a date",
                  [
-                     ('symbol', 'The stock ticker symbol for the quote'),
+                     ('symbol', 'The stock ticker symbol for the price'),
                      ('category', 'stock, etf, mutf, or index'),
                      ('fordate', 'The date YYYY-MM-DD')
                  ])
 xcu.add_function("QFLowPrice", "Get the low price for a date",
                  [
-                     ('symbol', 'The stock ticker symbol for the quote'),
+                     ('symbol', 'The stock ticker symbol for the price'),
+                     ('category', 'stock, etf, mutf, or index'),
+                     ('fordate', 'The date YYYY-MM-DD')
+                 ])
+xcu.add_function("QFDayVolume", "Get the trading volume for a date",
+                 [
+                     ('symbol', 'The stock ticker symbol for the volume'),
                      ('category', 'stock, etf, mutf, or index'),
                      ('fordate', 'The date YYYY-MM-DD')
                  ])
