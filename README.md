@@ -68,11 +68,11 @@ create a configuration file. The extension will create a default configuration f
 the first time it is used within LibreOffice.
 
 The content of the configuration file is JSON and looks something like this (showing defaults).
-```
+```json
 {
-    "loglevel": "debug",
-	"cachedb": "~/libreoffice/qf/qf-cache-db.sqlite3",
-	"datasource": "wsj"
+  "loglevel": "debug",
+  "cachedb": "~/libreoffice/qf/qf-cache-db.sqlite3",
+  "datasource": "wsj"
 }
 ```
 
@@ -85,18 +85,18 @@ The content of the configuration file is JSON and looks something like this (sho
 The location of the configuration file depends on your operating system.
 
 | OS | Location |
-|----|----------|
-| Windows | C:\Users\username\AppData\Local\libreoffice\qf\intrinio.conf |
+|:----|:----------|
+| Windows | C:\Users\username\AppData\Local\libreoffice\qf\qf.conf |
 | macOS | /Users/username/libreoffice/qf/qf.conf |
 | Ubuntu | /home/username/libreoffice/qf/qf.conf |
 
 ### Data Sources 
 
 | datasource | Description |
-|:-----|:-------|
-| wsj | Wall Street Journal web site (default) |
-| iex | IEX Trading web service |
-| stooq | stooq.com web site |
+| :----      | :---        |
+| wsj        | Wall Street Journal web site (default) |
+| iex        | IEX Trading web service |
+| stooq      | stooq.com web site |
 
 A word about data sources. 
 
@@ -116,12 +116,15 @@ These files show you how most of the LOCalc Extension functions
 can be used.
 
 ## LOCalc Functions
-The addin provides a number of functions for retrieving market data.
+
+### Historical Market Data
+The addin provides a number of functions for retrieving historical market data.
 
 * Opening price
 * Closing price
 * High price of day
 * Low price of day
+* Day volume
 
 ### QFClosingPrice
 Returns the closing price for a ticker symbol on a given date.
@@ -178,6 +181,35 @@ because some sources require it as a ticker symbol qualifier and it is
 difficult to determine a symbol's category from its ticker symbol. 
 
 date: The date for the price in ISO format (YYYY-MM-DD)
+
+### QFVolume
+Returns the day volume for a ticker symbol on a given date.
+```
+=QFLowPrice(symbol, category, date)
+```
+
+symbol: The ticker symbol for the equity whose day volume is to be retrieved.
+
+category: stock, mutf or mututalfund, etf, index. The category is necessary
+because some sources require it as a ticker symbol qualifier and it is 
+difficult to determine a symbol's category from its ticker symbol. 
+
+date: The date for the dat volume in ISO format (YYYY-MM-DD)
+
+## Utility Functions
+
+### QFVersion
+Returns the version of the QFinance extension.
+```
+=QFVersion()
+```
+
+### QFDataSource
+Returns the current data source. See [above](#data-sources) for a list
+of supported data sources.
+```
+=QFDataSource()
+```
 
 ## References
 * [LibreOffice Web Site](https://www.libreoffice.org/)
