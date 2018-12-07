@@ -39,6 +39,7 @@ try:
     # Local imports go here
     from qf_app_logger import AppLogger
     import xml.etree.ElementTree as etree
+    from qf_configuration import QConfiguration
     from qf_extn_helper import qf_version
     import qf_hist_quote
 
@@ -70,6 +71,10 @@ class QFImpl(unohelper.Base, XQFinance):
     def QFVersion(self):
         logger.debug("QFVersion called %s", _qf_version)
         return _qf_version
+
+    def QFDataSource(self):
+        logger.debug("QFDataSource called %s", QConfiguration.qf_data_source)
+        return QConfiguration.qf_data_source
 
     def QFClosingPrice(self, symbol, category, fordate):
         logger.debug("QFClosingPrice called %s %s %s", symbol, category, fordate)

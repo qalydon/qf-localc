@@ -122,6 +122,9 @@ xcu = XCUFile("com.qf.api.localc.python.QFImpl", "XQFinance")
 xcu.add_function("QFVersion", "Get extension version",
                  [
                  ])
+xcu.add_function("QFDataSource", "Get current data source",
+                 [
+                 ])
 xcu.add_function("QFClosingPrice", "Get the closing price for a date",
                  [
                      ('symbol', 'The stock ticker symbol for the price'),
