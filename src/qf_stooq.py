@@ -46,8 +46,9 @@ class StooqDataSource(DataSourceBase):
         :return: OHLC with date in JSON format
         """
         # Remap symbol if necessary
+        ticker = ticker.lower()
         if ticker in index_map.keys():
-            ticker = index_map[ticker.lower()]
+            ticker = index_map[ticker]
         else:
             # By observation all US tickers end with .us
             # Here we use the configured postfix

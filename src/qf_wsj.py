@@ -63,8 +63,9 @@ class WSJDataSource(DataSourceBase):
         :return: OHLC with date in JSON format
         """
         # Remap symbol if necessary
+        ticker = ticker.lower()
         if ticker in index_map.keys():
-            ticker = index_map[ticker.lower()]
+            ticker = index_map[ticker]
 
         # Validate/translate category
         if category:
