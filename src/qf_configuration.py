@@ -24,10 +24,6 @@ import datetime
 import json
 from qf_app_logger import AppLogger
 from qf_url_helpers import setup_cacerts
-# TODO Remove these imports
-from qf_wsj import WSJDataSource
-from qf_iex import IEXDataSource
-from qf_stooq import StooqDataSource
 
 # Logger init
 the_app_logger = AppLogger("qf-extension")
@@ -55,7 +51,6 @@ class QConfiguration:
     qf_conf_exists = False
     qf_cache_db = "~/libreoffice/qf/qf-cache-db.sqlite3"
     qf_data_source = "wsj"
-    qf_data_source_obj = None
     # Experimental Stooq configuration
     qf_stooq_conf = {
         "tickerpostfix": ".us"
@@ -97,17 +92,8 @@ class QConfiguration:
             logger.info("Using cache db %s", cls.qf_cache_db)
 
             # Data source can be wsj, iex. In the future maybe stooq, triingo
-            # TODO Move this code out of here
             if "datasource" in cfj:
                 cls.qf_data_source = cfj["datasource"].lower()
-                if cls.qf_data_source == "wsj":
-                    cls.qf_data_source_obj = WSJDataSource()
-                elif cls.qf_data_source == "iex":
-                    cls.qf_data_source_obj = IEXDataSource()
-                elif cls.qf_data_source == "stooq":
-                    cls.qf_data_source_obj = StooqDataSource()
-                else:
-                    logger.error("Unrecognized data source %s", cls.qf_data_source)
             logger.info("Using data source %s", cls.qf_data_source)
 
             # Stooq configuration

@@ -18,11 +18,12 @@
 # along with this program (the LICENSE.md file).  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import json
+# import json
 from qf_app_logger import AppLogger
 from qf_configuration import QConfiguration
 from qf_extn_helper import qf_version
 from qf_hist_quote import closing_price, opening_price, high_price, low_price, daily_volume
+from qf_data_source_mgr import DataSourceMgr
 # import datetime
 # import time
 # import json
@@ -30,6 +31,8 @@ from qf_hist_quote import closing_price, opening_price, high_price, low_price, d
 
 the_app_logger = AppLogger("qf-extension")
 logger = the_app_logger.getAppLogger()
+
+DataSourceMgr.create_data_source()
 
 # print("Price")
 # logger.info("Testing iex_price.get_price()")

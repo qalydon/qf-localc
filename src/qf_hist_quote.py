@@ -15,18 +15,12 @@
 # along with this program (the LICENSE.md file).  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import json
 from qf_app_logger import AppLogger
 from qf_extn_helper import normalize_date
 from qf_cache_db import CacheDB
-from qf_configuration import QConfiguration
-# import qf_wsj
-import qf_stooq
-# import datetime
-# import time
-# import json
-# Logger init
+from qf_data_source_mgr import DataSourceMgr
 
+# Logger init
 the_app_logger = AppLogger("qf-extension")
 logger = the_app_logger.getAppLogger()
 
@@ -54,7 +48,7 @@ def __get_price_record(ticker, category, for_date):
         return r
 
     # Try data source
-    r = QConfiguration.qf_data_source_obj.get_historical_price_data(ticker, category, for_date)
+    r = DataSourceMgr.qf_data_source_obj.get_historical_price_data(ticker, category, for_date)
     if r:
         # Cache result
         CacheDB.insert_ohlc_price(ticker, for_date,

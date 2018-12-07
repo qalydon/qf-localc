@@ -42,6 +42,7 @@ try:
     from qf_configuration import QConfiguration
     from qf_extn_helper import qf_version
     import qf_hist_quote
+    from qf_data_source_mgr import DataSourceMgr
 
     # Logger init
     the_app_logger = AppLogger("qf-extension")
@@ -64,6 +65,7 @@ class QFImpl(unohelper.Base, XQFinance):
     """Define the main class for the QFinance LO Calc extension """
     def __init__( self, ctx ):
         self.ctx = ctx
+        DataSourceMgr.create_data_source()
         logger.debug("QFImpl initialized")
         logger.debug("self: %s", str(self))
         logger.debug("ctx: %s", str(ctx))
