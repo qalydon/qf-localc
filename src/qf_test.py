@@ -171,8 +171,9 @@ print("cache DB:", QConfiguration.qf_cache_db)
 # print("Low:", d)
 
 ticker = "mmm"
-opening = opening_price(ticker, "", "2018-12-04")
-closing = closing_price(ticker, "", "2018-12-04")
-volume = daily_volume(ticker, "", "2018-12-04")
+for_date = "2018-12-06"
+opening = opening_price(ticker, "", for_date)
+closing = closing_price(ticker, "", for_date)
+volume = daily_volume(ticker, "", for_date)
 
 print(opening, closing, volume)

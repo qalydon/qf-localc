@@ -17,6 +17,7 @@
 #
 
 import urllib.request
+import datetime
 from qf_app_logger import AppLogger
 from qf_data_source_base import DataSourceBase
 
@@ -47,6 +48,12 @@ class StooqDataSource(DataSourceBase):
         # Remap symbol if necessary
         if ticker in index_map.keys():
             ticker = index_map[ticker.lower()]
+        else:
+            # By observation all US tickers end with .us
+            # Here we use the configured postfix
+            # if QConfiguration.qf_stooq_conf and "tickerpostfix" in QConfiguration.qf_stooq_conf:
+            #     ticker += QConfiguration.qf_stooq_conf["tickerpostfix"]
+            ticker += ".us"
 
         # As of 2018-12-06 this URL consistently returns "No data" as if the request is black-listed
         url = 'https://stooq.com/q/d/l/?s={0}&d1={1}&d2={1}&i=d'.format(ticker, for_date.replace('-', ''))
@@ -57,19 +64,26 @@ class StooqDataSource(DataSourceBase):
                 # This code depends on the first line of the result being the column names
                 # and the second line being the data for the date. All lines after the second
                 # line are ignored.
+                # Data looks like this:
+                # 'Date', 'Open', 'High', 'Low', 'Close', 'Volume'
+                #  '2018-12-06', '199.61', '203.08', '198.19', '202.68', '2991766'
                 lines = csv_data.splitlines()
-                if len(lines) < 2:
-                    raise IndexError("No result for ticker symbol")
                 a = []
                 for line in lines:
                     if line:
                         a.append(line.split(','))
                 d = {}
-                for i in range(5):
+                for i in range(6):
+                    key = a[0][i].lower().strip()
                     try:
-                        d[a[0][i].lower()] = float(a[1][i])
+                        d[key] = float(a[1][i])
                     except:
-                        d[a[0][i].lower()] = a[1][i]
+                        if key == "date":
+                            # Date - Stooq uses ISO format YYYY-mm-dd
+                            d[key] = a[1][i]
+                        else:
+                            # Not date
+                            d[key] = a[1][i]
         except Exception as ex:
             d = None
             raise ex

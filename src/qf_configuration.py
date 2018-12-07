@@ -24,6 +24,7 @@ import datetime
 import json
 from qf_app_logger import AppLogger
 from qf_url_helpers import setup_cacerts
+# TODO Remove these imports
 from qf_wsj import WSJDataSource
 from qf_iex import IEXDataSource
 from qf_stooq import StooqDataSource
@@ -55,6 +56,10 @@ class QConfiguration:
     qf_cache_db = "~/libreoffice/qf/qf-cache-db.sqlite3"
     qf_data_source = "wsj"
     qf_data_source_obj = None
+    # Experimental Stooq configuration
+    qf_stooq_conf = {
+        "tickerpostfix": ".us"
+    }
 
     @classmethod
     def load(cls):
@@ -72,9 +77,11 @@ class QConfiguration:
         try:
             cf = open(cls.full_file_path, "r")
             cfj = json.loads(cf.read())
+
             if "loglevel" in cfj:
                 cls.loglevel = cfj["loglevel"]
                 the_app_logger.set_log_level(cls.loglevel)
+
             if "cachedb" in cfj:
                 cls.qf_cache_db = cfj["cachedb"]
             else:
@@ -88,7 +95,9 @@ class QConfiguration:
                     file_path = "{0}\\libreoffice\\qf\\".format(os.environ["LOCALAPPDATA"])
                 cls.qf_cache_db = file_path + file_name
             logger.info("Using cache db %s", cls.qf_cache_db)
+
             # Data source can be wsj, iex. In the future maybe stooq, triingo
+            # TODO Move this code out of here
             if "datasource" in cfj:
                 cls.qf_data_source = cfj["datasource"].lower()
                 if cls.qf_data_source == "wsj":
@@ -100,6 +109,11 @@ class QConfiguration:
                 else:
                     logger.error("Unrecognized data source %s", cls.qf_data_source)
             logger.info("Using data source %s", cls.qf_data_source)
+
+            # Stooq configuration
+            if "stooqconf" in cfj:
+                cls.qf_stooq_conf = cfj["stooqconf"]
+
             cf.close()
             cls.qf_conf_exists = True
         except FileNotFoundError as ex:
