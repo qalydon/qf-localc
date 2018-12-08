@@ -16,7 +16,7 @@ The data sources change, the extension functions are frequently impacted
 and thus, any using spreadsheet is impacted. Some of the extension
 functions are actually modeled on the data source's API.
 And, worse yet, the T's and C's of the data source can change making 
-the data is no longer freely available.
+the data no longer freely available.
 
 An example will serve to illustrate this point about abstraction. 
 The first function to 
@@ -25,9 +25,10 @@ be implemented using any data source that can provide a ticker symbols's
 closing price for a given date. There's nothing in the function name 
 or its parameters (a ticker symbol, category and date) that indicates
 the actual source. If the initial implementation of QFClosingPrice
-uses data source A and this source changes, the implementation of 
+uses data source A and this source subsequently changes, the implementation of 
 QFClosingPrice can be changed to use data source B without changing 
-any using spreadsheet.
+any using spreadsheet. Of course this depends on both data sources
+A and B supporting a historical closing price.
 
 ### LibreOffice Compatibility
 The LOCalc addin works on the Windows, macOS and Ubuntu versions of
@@ -101,13 +102,37 @@ The location of the configuration file depends on your operating system.
 A word about data sources. 
 
 The listed data sources are free. However, they reserve the right
-to limit your use of their service. Therefore, your mileage may vary. In particular I have 
-experienced problems with Stooq leading me to believe the site may have black listed my
-IP address.
+to limit your use of their service. Therefore, your mileage may vary. Each of these
+data sources tend to have their own idiosyncracies.
 
 Also, each data source **does not** support every kind of ticker symbol 
 (stock, mutual fund, ETF, index). The WSJ data source is the most comprehensive while
 the other sources typically only support stocks and ETFs (e.g. IEX and Stooq).
+
+In the future, other data sources may be added (e.g. Tiingo).
+
+#### Using Stooq
+If you want to use Stooq as your data source, you need to be aware of the ticker
+symbols that it recognizes. By observation, most ticker symbols need to have ".us"
+appended to the normal symbol. For example, the symbol "ibm" would be
+"ibm.us".
+
+Since you don't want to change all of the ticker symbols in a spreadsheet when
+you change the data source, the postfix is applied by the extension. The postfix 
+defaults to ".us", but should you need a different postfix you can define one
+in the configuration file.
+
+```json
+{
+  "loglevel": "debug",
+  "cachedb": "~/libreoffice/qf/qf-cache-db.sqlite3",
+  "datasource": "stooq",
+  "stooqconf":
+  {
+    "tickerpostfix": ".us"
+  }
+}
+```
 
 ## Example Files
 You can find a number of example files in the
@@ -115,10 +140,50 @@ You can find a number of example files in the
 These files show you how most of the LOCalc Extension functions
 can be used.
 
-## LOCalc Functions
+## Using LOCalc Functions
+
+### Ticker Symbol Categories
+Most LOCalc functions that use ticker symbols also require a category.
+The category is necessary
+because some sources require it as a ticker symbol qualifier and it is 
+difficult to determine a symbol's category from its ticker symbol.
+
+The standard categories are:
+* stock or empty (as in the empty string "")
+* mutf or mututalfund
+* etf
+* index
+
+Some examples:
+```
+=QFClosingPrice("ibm", "stock", "2018-12-07")
+=QFClosingPrice("ibm", "", "2018-12-07")
+=QFClosingPrice("usibx", "mutf", "2018-12-07")
+=QFClosingPrice("vym", "etf", "2018-12-07")
+=QFClosingPrice("djia", "index", "2018-12-07")
+```
+
+### Standardized Index Names
+Those data sources that support indexes tend to recognize different 
+index names. To ameliorate this problem, each data source translates
+a standard index name to a data source specific index name.
+
+Standard index names are
+* djia - Dow Jones Industrial Average
+* spx - S&P 500
+* nasdaq - NASDAQ Composite
+
+Some examples:
+```
+=QFClosingPrice("djia", "index", "2018-12-07")
+=QFClosingPrice("spx", "index", "2018-12-07")
+=QFClosingPrice("nasdaq", "index", "2018-12-07")
+```
+
+## Extension LOCalc Functions
 
 ### Historical Market Data
-The addin provides a number of functions for retrieving historical market data.
+The extension provides a number of functions for retrieving historical market data.
 
 * Opening price
 * Closing price
@@ -134,9 +199,7 @@ Returns the closing price for a ticker symbol on a given date.
 
 symbol: The ticker symbol for the equity whose closing price is to be retrieved.
 
-category: stock, mutf or mututalfund, etf, index. The category is necessary
-because some sources require it as a ticker symbol qualifier and it is 
-difficult to determine a symbol's category from its ticker symbol. 
+category: stock, mutf or mututalfund, etf, index. 
 
 date: The date for the closing price in ISO format (YYYY-MM-DD)
 
@@ -148,9 +211,7 @@ Returns the opening price for a ticker symbol on a given date.
 
 symbol: The ticker symbol for the equity whose opening price is to be retrieved.
 
-category: stock, mutf or mututalfund, etf, index. The category is necessary
-because some sources require it as a ticker symbol qualifier and it is 
-difficult to determine a symbol's category from its ticker symbol. 
+category: stock, mutf or mututalfund, etf, index. 
 
 date: The date for the opening price in ISO format (YYYY-MM-DD)
 
@@ -162,9 +223,7 @@ Returns the high price for a ticker symbol on a given date.
 
 symbol: The ticker symbol for the equity whose price is to be retrieved.
 
-category: stock, mutf or mututalfund, etf, index. The category is necessary
-because some sources require it as a ticker symbol qualifier and it is 
-difficult to determine a symbol's category from its ticker symbol. 
+category: stock, mutf or mututalfund, etf, index.  
 
 date: The date for the price in ISO format (YYYY-MM-DD)
 
@@ -185,14 +244,12 @@ date: The date for the price in ISO format (YYYY-MM-DD)
 ### QFVolume
 Returns the day volume for a ticker symbol on a given date.
 ```
-=QFLowPrice(symbol, category, date)
+=QFVolume(symbol, category, date)
 ```
 
 symbol: The ticker symbol for the equity whose day volume is to be retrieved.
 
-category: stock, mutf or mututalfund, etf, index. The category is necessary
-because some sources require it as a ticker symbol qualifier and it is 
-difficult to determine a symbol's category from its ticker symbol. 
+category: stock, mutf or mututalfund, etf, index.
 
 date: The date for the dat volume in ISO format (YYYY-MM-DD)
 
