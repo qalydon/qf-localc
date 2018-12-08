@@ -20,6 +20,7 @@ import urllib.request
 import datetime
 from qf_app_logger import AppLogger
 from qf_data_source_base import DataSourceBase
+from qf_configuration import QConfiguration
 
 # Logger init
 the_app_logger = AppLogger("qf-extension")
@@ -53,8 +54,8 @@ class StooqDataSource(DataSourceBase):
             # By observation all US tickers end with .us
             # Here we use the configured postfix
             # if QConfiguration.qf_stooq_conf and "tickerpostfix" in QConfiguration.qf_stooq_conf:
-            #     ticker += QConfiguration.qf_stooq_conf["tickerpostfix"]
-            ticker += ".us"
+            ticker += QConfiguration.qf_stooq_conf["tickerpostfix"]
+            # ticker += ".us"
 
         # As of 2018-12-06 this URL consistently returns "No data" as if the request is black-listed
         url = 'https://stooq.com/q/d/l/?s={0}&d1={1}&d2={1}&i=d'.format(ticker, for_date.replace('-', ''))
