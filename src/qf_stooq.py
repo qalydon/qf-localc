@@ -53,8 +53,9 @@ class StooqDataSource(DataSourceBase):
         else:
             # By observation all US tickers end with .us
             # Here we use the configured postfix
-            # if QConfiguration.qf_stooq_conf and "tickerpostfix" in QConfiguration.qf_stooq_conf:
-            ticker += QConfiguration.qf_stooq_conf["tickerpostfix"]
+            # if the ticker does not already have the postfix
+            if not ticker.endswith(QConfiguration.qf_stooq_conf["tickerpostfix"]):
+                ticker += QConfiguration.qf_stooq_conf["tickerpostfix"]
             # ticker += ".us"
 
         # As of 2018-12-06 this URL consistently returns "No data" as if the request is black-listed
