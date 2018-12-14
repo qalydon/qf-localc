@@ -26,6 +26,7 @@ try:
     import sys
     import inspect
     import threading
+    import datetime
     import unohelper
     from com.qf.api.localc import XQFinance
 
@@ -40,7 +41,7 @@ try:
     from qf_app_logger import AppLogger
     import xml.etree.ElementTree as etree
     from qf_configuration import QConfiguration
-    from qf_extn_helper import qf_version
+    from qf_extn_helper import qf_version, normalize_date
     import qf_hist_quote
     from qf_data_source_mgr import DataSourceMgr
 
@@ -79,25 +80,79 @@ class QFImpl(unohelper.Base, XQFinance):
         return QConfiguration.qf_data_source
 
     def QFClosingPrice(self, symbol, category, fordate):
-        logger.debug("QFClosingPrice called %s %s %s", symbol, category, fordate)
-        return qf_hist_quote.closing_price(symbol, category, fordate)
+        valid = self.__validate_parms(symbol, category, fordate)
+        if (valid[0]):
+            logger.debug("QFClosingPrice called %s %s %s", symbol, category, fordate)
+            return qf_hist_quote.closing_price(symbol, category, fordate)
+        return valid[1]
 
     def QFOpeningPrice(self, symbol, category, fordate):
         logger.debug("QFOpeningPrice called %s %s %s", symbol, category, fordate)
-        return qf_hist_quote.opening_price(symbol, category, fordate)
+        valid = self.__validate_parms(symbol, category, fordate)
+        if (valid[0]):
+            return qf_hist_quote.opening_price(symbol, category, fordate)
+        return valid[1]
 
     def QFHighPrice(self, symbol, category, fordate):
         logger.debug("QFHighPrice called %s %s %s", symbol, category, fordate)
-        return qf_hist_quote.high_price(symbol, category, fordate)
+        valid = self.__validate_parms(symbol, category, fordate)
+        if (valid[0]):
+            return qf_hist_quote.high_price(symbol, category, fordate)
+        return valid[1]
 
     def QFLowPrice(self, symbol, category, fordate):
         logger.debug("QFLowPrice called %s %s %s", symbol, category, fordate)
-        return qf_hist_quote.low_price(symbol, category, fordate)
+        valid = self.__validate_parms(symbol, category, fordate)
+        if (valid[0]):
+            return qf_hist_quote.low_price(symbol, category, fordate)
+        return valid[1]
 
     def QFDayVolume(self, symbol, category, fordate):
         logger.debug("QFDayVolume called %s %s %s", symbol, category, fordate)
-        return qf_hist_quote.daily_volume(symbol, category, fordate)
+        valid = self.__validate_parms(symbol, category, fordate)
+        if (valid[0]):
+            return qf_hist_quote.daily_volume(symbol, category, fordate)
+        return valid[1]
 
+    def __validate_parms(self, symbol, category, fordate):
+        """
+        Validate historical function parameters
+        :param symbol: Not blank
+        :param category: "", stock, etf, mutf, mutualfund or index
+        :param fordate: yyyy-mm-dd or mm/dd/yy or LOCalc float date
+        :return: (valid, message)
+        """
+        if not symbol:
+            return (False, "Invalid ticker symbol")
+        if category.lower() not in ["", "stock", "etf", "mutf", "mutualfund", "index"]:
+            return (False, "Invalid category")
+        if type(fordate) == float:
+            # Date is a LOCalc float date
+            normalized_dt = normalize_date(fordate)
+            dt = datetime.datetime.strptime(normalized_dt, "%Y-%m-%d")
+            d = datetime.date(dt.year, dt.month, dt.day)
+            if datetime.date.today() <= d:
+                # The date cannot be in the future
+                return (False, "Date must be in the past")
+        elif type(fordate) == str and fordate != "":
+            # Assumed to be a string in ISO format (YYYY-MM-DD).
+            try:
+                dt = datetime.datetime.strptime(fordate, "%Y-%m-%d")
+            except Exception:
+                try:
+                    # Try date as mm/dd/yy
+                    dt = datetime.datetime.strptime(fordate, "%m/%d/%y")
+                except Exception:
+                    # Failed both date format checks
+                    return (False, "Invalid date")
+            d = datetime.date(dt.year, dt.month, dt.day)
+            if datetime.date.today() <= d:
+                # The date cannot be in the future
+                return (False, "Date must be in the past")
+        else:
+            return (False, "Invalid date type or format")
+        # All checks passed
+        return (True, "")
 
 #
 # Boiler plate code for adding an instance of the extension
