@@ -46,3 +46,11 @@ class DataSourceMgr:
             logger.error("Unrecognized data source %s", QConfiguration.qf_data_source)
             raise ValueError("Unrecognized data source {0}".format(QConfiguration.qf_data_source))
         logger.debug("Data source created: %s", QConfiguration.qf_data_source)
+
+    @classmethod
+    def data_source(cls):
+        """
+        Returns the currently configured data source
+        :return:
+        """
+        return QConfiguration.qf_data_source

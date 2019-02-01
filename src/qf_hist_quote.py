@@ -52,7 +52,8 @@ def __get_price_record(ticker, category, for_date):
     if r:
         # Cache result
         CacheDB.insert_ohlc_price(ticker, for_date,
-                                  r["open"], r["high"], r["low"], r["close"], r["volume"], 0.0)
+                                  r["open"], r["high"], r["low"], r["close"], r["volume"],
+                                  0.0, DataSourceMgr.data_source())
         return r
 
     return None

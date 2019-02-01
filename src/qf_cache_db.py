@@ -48,7 +48,7 @@ class CacheDB:
         if not os.path.exists(full_file_path):
             logger.info("Create database")
             conn = sqlite3.connect(full_file_path)
-            conn.execute("CREATE TABLE SymbolDate (Symbol text not null, Date text not null, Open real, High real, Low real, Close real, Volume integer, Adj_Close real, PRIMARY KEY(Symbol,Date))")
+            conn.execute("CREATE TABLE SymbolDate (Symbol text not null, Date text not null, Open real, High real, Low real, Close real, Volume integer, Adj_Close real, Source text, PRIMARY KEY(Symbol,Date))")
         else:
             conn = sqlite3.connect(full_file_path)
 
@@ -76,22 +76,23 @@ class CacheDB:
         return r
 
     @classmethod
-    def insert_closing_price(cls, symbol, tgtdate, close):
+    def insert_closing_price(cls, symbol, tgtdate, close, data_source):
         """
         Insert a new cache record in the cache DB.
         :param symbol:
         :param tgtdate:
         :param close:
+        :param data_source: text
         :return:
         """
         conn = cls.__open_yh_cache()
         # print ("Cache data:", symbol, tgtdate, close)
-        conn.execute("INSERT INTO SymbolDate values (?,?,?,?,?,?,?,?)", [symbol, tgtdate, 0, 0, 0, close, 0, 0])
+        conn.execute("INSERT INTO SymbolDate values (?,?,?,?,?,?,?,?,?)", [symbol, tgtdate, 0, 0, 0, close, 0, 0, data_source])
         conn.commit()
         conn.close()
 
     @classmethod
-    def insert_ohlc_price(cls, symbol, tgtdate, open_price, high_price, low_price, closing_price, volume, adj_closing_price):
+    def insert_ohlc_price(cls, symbol, tgtdate, open_price, high_price, low_price, closing_price, volume, adj_closing_price, data_source):
         """
         Insert an OHLC record into the cache DB. Missing values should be 0.0 or 0.
         :param symbol:
@@ -102,11 +103,12 @@ class CacheDB:
         :param closing_price: float
         :param volume: integer
         :param adj_closing_price: float
+        :param data_source: text
         :return: None
         """
         conn = cls.__open_yh_cache()
         # print ("Cache data:", symbol, tgtdate, close)
-        conn.execute("INSERT INTO SymbolDate values (?,?,?,?,?,?,?,?)",
-                     [symbol, tgtdate, open_price, high_price, low_price, closing_price, volume, adj_closing_price])
+        conn.execute("INSERT INTO SymbolDate values (?,?,?,?,?,?,?,?,?)",
+                     [symbol, tgtdate, open_price, high_price, low_price, closing_price, volume, adj_closing_price, data_source])
         conn.commit()
         conn.close()
