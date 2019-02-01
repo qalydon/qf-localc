@@ -71,6 +71,12 @@ class StooqDataSource(DataSourceBase):
                 # 'Date', 'Open', 'High', 'Low', 'Close', 'Volume'
                 #  '2018-12-06', '199.61', '203.08', '198.19', '202.68', '2991766'
                 lines = csv_data.splitlines()
+                # The response must contain at least 2 lines
+                if len(lines) < 2:
+                    logger.error(url)
+                    logger.error("Did not return a response")
+                    return None
+
                 a = []
                 for line in lines:
                     if line:
