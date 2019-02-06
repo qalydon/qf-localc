@@ -51,6 +51,7 @@ class QConfiguration:
     qf_conf_exists = False
     qf_cache_db = "~/libreoffice/qf/qf-cache-db.sqlite3"
     qf_data_source = "wsj"
+    qf_alt_data_source = "stooq"
     # Experimental Stooq configuration
     qf_stooq_conf = {
         "tickerpostfix": ".us"
@@ -71,6 +72,9 @@ class QConfiguration:
         # Read qf.conf file
         try:
             cf = open(cls.full_file_path, "r")
+            # The configuration file exists, but it may not be valid
+            cls.qf_conf_exists = True
+
             cfj = json.loads(cf.read())
 
             if "loglevel" in cfj:
@@ -95,17 +99,19 @@ class QConfiguration:
             if "datasource" in cfj:
                 cls.qf_data_source = cfj["datasource"].lower()
             logger.info("Using data source %s", cls.qf_data_source)
+            if "altdatasource" in cfj:
+                cls.qf_alt_data_source = cfj["altdatasource"].lower()
+            logger.info("Using alternate data source %s", cls.qf_alt_data_source)
 
             # Stooq configuration
             if "stooqconf" in cfj:
                 cls.qf_stooq_conf = cfj["stooqconf"]
 
             cf.close()
-            cls.qf_conf_exists = True
         except FileNotFoundError as ex:
             logger.error("%s was not found", cls.full_file_path)
         except Exception as ex:
-            logger.error("An exception occurred while attempting to load qf.conf")
+            logger.error("An exception occurred while attempting to load %s", cls.full_file_path)
             logger.error(str(ex))
 
         # Set up path to certs
@@ -145,6 +151,10 @@ class QConfiguration:
         conf = {}
         conf["certifi"] = cls.cacerts
         conf["loglevel"] = cls.loglevel
+        conf["cachedb"] = cls.qf_cache_db
+        conf["datasource"] = cls.qf_data_source
+        conf["altdatasource"] = cls.qf_alt_data_source
+        conf["stooqconf"] = cls.qf_stooq_conf
 
         logger.debug("Saving configuration to %s", cls.full_file_path)
         cf = open(cls.full_file_path, "w")
