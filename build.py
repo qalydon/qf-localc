@@ -20,9 +20,18 @@
 # http://www.biochemfusion.com/doc/Calc_addin_howto.html
 # https://github.com/madsailor/SMF-Extension
 #
-# How to run a build:
+# How to run a build on macOS X:
 #
+# lo_sdk.sh
 # python3 build.py [next]
+#
+# where:
+#   next option causes the build number to be incremented. This updates the src/description.xml file.
+#
+# How to run a build on Windows:
+#
+# lo_sdk.bat
+# python build.py [next]
 #
 # where:
 #   next option causes the build number to be incremented. This updates the src/description.xml file.
@@ -38,9 +47,14 @@ import xml.etree.ElementTree as etree
 # Set up environment vars
 if sys.platform == 'darwin':
     # macOS
+    # Be sure to run lo_sdk.sh first
     os.environ["PATH"] = os.environ["PATH"] + ":/usr/lib/ure/bin/"
     os.environ["PATH"] = os.environ["PATH"] + ":/Users/dhocker/LibreOffice6.0_SDK/bin"
     os.environ["DYLD_LIBRARY_PATH"] = os.environ["OO_SDK_URE_LIB_DIR"]
+elif sys.platform == 'win32':
+    # Windows
+    # Nothing special required. Be sure to run lo_sdk.bat first.
+    pass
 else:
     # TODO figure out how to build on other OSes
     print ("Platform {0} is not supported by this build script".format(sys.platform))
