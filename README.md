@@ -33,6 +33,7 @@ A and B supporting a historical closing price.
 ### LibreOffice Compatibility
 The LOCalc addin works on the Windows, macOS and Ubuntu versions of
 [LibreOffice (version >= 5.0)](https://www.libreoffice.org/).
+Testing is performed on the latest general distribution release.
 
 ### License
 GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007. Refer to the
@@ -73,7 +74,12 @@ The content of the configuration file is JSON and looks something like this (sho
 {
   "loglevel": "debug",
   "cachedb": "~/libreoffice/qf/qf-cache-db.sqlite3",
-  "datasource": "wsj"
+  "datasource": "wsj",
+  "altdatasource": "stooq",
+  "stooqconf": 
+  {
+        "tickerpostfix": ".us"
+  }
 }
 ```
 
@@ -82,6 +88,8 @@ The content of the configuration file is JSON and looks something like this (sho
 | loglevel | error, warning, info, debug (default) |
 | cachedb | Historical data is persistently cached in a SQLite database. This tells the extension what database to create and use.
 | datasource | The extension can use several sources for data. See the [list](#data-sources) below.
+| altdatasource | For future use. Eventually, this will be the backup data source. |
+| stooqconf | Specific configuration for the Stooq data source. See [below](#using-stooq). | 
 
 The location of the configuration file depends on your operating system.
 
