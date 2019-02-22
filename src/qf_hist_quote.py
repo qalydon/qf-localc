@@ -19,6 +19,7 @@ from qf_app_logger import AppLogger
 from qf_extn_helper import normalize_date
 from qf_cache_db import CacheDB
 from qf_data_source_mgr import DataSourceMgr
+import json
 
 # Logger init
 the_app_logger = AppLogger("qf-extension")
@@ -50,6 +51,8 @@ def __get_price_record(ticker, category, for_date):
     # Try data source
     r = DataSourceMgr.qf_data_source_obj.get_historical_price_data(ticker, category, for_date)
     if r:
+        # Verbose debugging
+        logger.debug(json.dumps(r))
         # Cache result
         CacheDB.insert_ohlc_price(ticker, for_date,
                                   r["open"], r["high"], r["low"], r["close"], r["volume"],
