@@ -56,6 +56,9 @@ class QConfiguration:
     qf_stooq_conf = {
         "tickerpostfix": ".us"
     }
+    qf_tiingo_conf = {
+        "apitoken": ""
+    }
 
     @classmethod
     def load(cls):
@@ -106,6 +109,10 @@ class QConfiguration:
             # Stooq configuration
             if "stooqconf" in cfj:
                 cls.qf_stooq_conf = cfj["stooqconf"]
+
+            # Tiingo configuration
+            if "tiingoconf" in cfj:
+                cls.qf_tiingo_conf = cfj["tiingoconf"]
 
             cf.close()
         except FileNotFoundError as ex:

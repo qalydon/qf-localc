@@ -106,12 +106,13 @@ The location of the configuration file depends on your operating system.
 | wsj        | Wall Street Journal web site (default) |
 | iex        | IEX Trading web service |
 | stooq      | stooq.com web site |
+| tiingo     | See [Tiingo API](https://www.tiingo.com/data/api). <br/>Requires a free basic account or better. |
 
 A word about data sources. 
 
 The listed data sources are free. However, they reserve the right
 to limit your use of their service. Therefore, your mileage may vary. Each of these
-data sources tend to have their own idiosyncracies.
+data sources tend to have their own idiosyncrasies.
 
 Also, each data source **does not** support every kind of ticker symbol 
 (stock, mutual fund, ETF, index). The WSJ data source is the most comprehensive while
@@ -142,6 +143,27 @@ in the configuration file.
 }
 ```
 
+#### Using Tiingo
+If you want to use Tiingo as your data source, you need to create an account
+and get your API token. Go to [https://www.tiingo.com/](https://www.tiingo.com/)
+and click on the Sign-up button. After you get through the sign-up procedure
+you can get your API token. You should be able to get your API token from
+this page [Connecting](https://api.tiingo.com/documentation/general/connecting).
+Copy your API token and paste it into your configuration file as shown below.
+
+Be sure to note the [limitations](https://api.tiingo.com/about/pricing) of a free account.
+
+```json
+{
+  "loglevel": "debug",
+  "cachedb": "~/libreoffice/qf/qf-cache-db.sqlite3",
+  "datasource": "tiingo",
+  "tiingoconf":
+  {
+    "apitoken": "0123456789012345678901234567890123456789"
+  }
+}
+```
 ## Example Files
 You can find a number of example files in the
 [examples folder](https://github.com/qalydon/qf-localc/tree/master/examples).

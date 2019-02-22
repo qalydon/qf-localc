@@ -20,6 +20,7 @@ from qf_configuration import QConfiguration
 from qf_wsj import WSJDataSource
 from qf_iex import IEXDataSource
 from qf_stooq import StooqDataSource
+from qf_tiingo import TiingoDataSource
 from qf_app_logger import AppLogger
 
 
@@ -42,6 +43,8 @@ class DataSourceMgr:
             cls.qf_data_source_obj = IEXDataSource()
         elif QConfiguration.qf_data_source == "stooq":
             cls.qf_data_source_obj = StooqDataSource()
+        elif QConfiguration.qf_data_source == "tiingo":
+            cls.qf_data_source_obj = TiingoDataSource()
         else:
             logger.error("Unrecognized data source %s", QConfiguration.qf_data_source)
             raise ValueError("Unrecognized data source {0}".format(QConfiguration.qf_data_source))
