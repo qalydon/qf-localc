@@ -30,6 +30,12 @@ QFClosingPrice can be changed to use data source B without changing
 any using spreadsheet. Of course this depends on both data sources
 A and B supporting a historical closing price.
 
+The abstraction concept is implemented using a data source list for 
+each category of ticker symbol. The list specifies which data sources
+can obtain data for a category. If the first data source in the list fails 
+to return data, the second data source is tried. Each data source in
+a list is tried until data is returned or the list is exhausted.
+
 ### LibreOffice Compatibility
 The LOCalc addin works on the Windows, macOS and Ubuntu versions of
 [LibreOffice (version >= 5.0)](https://www.libreoffice.org/).
@@ -74,11 +80,21 @@ The content of the configuration file is JSON and looks something like this (sho
 {
   "loglevel": "debug",
   "cachedb": "~/libreoffice/qf/qf-cache-db.sqlite3",
-  "datasource": "wsj",
-  "altdatasource": "stooq",
+  "datasources":
+  {
+    "comment": "List data sources in priority order",
+    "stock": ["tiingo", "stooq", "wsj", "iex"],
+    "mutf": ["wsj", "tiingo", "stooq", "iex"],
+    "etf": ["tiingo", "wsj", "stooq", "iex"],
+    "index": ["stooq", "wsj"]
+  },
   "stooqconf": 
   {
         "tickerpostfix": ".us"
+  },
+  "tiingoconf":
+  {
+    "apitoken": "0123456789012345678901234567890123456789"
   }
 }
 ```
@@ -87,9 +103,9 @@ The content of the configuration file is JSON and looks something like this (sho
 |:-----|:-------|
 | loglevel | error, warning, info, debug (default) |
 | cachedb | Historical data is persistently cached in a SQLite database. This tells the extension what database to create and use.
-| datasource | The extension can use several sources for data. See the [list](#data-sources) below.
-| altdatasource | For future use. Eventually, this will be the backup data source. |
+| datasources | The extension can use several sources for each ticker symbol category data. See the [list](#data-sources) below.
 | stooqconf | Specific configuration for the Stooq data source. See [below](#using-stooq). | 
+| tiingoconf | Specific configuration for the Tiingo data source. See [below](#using-tiingo). |
 
 The location of the configuration file depends on your operating system.
 
@@ -99,7 +115,14 @@ The location of the configuration file depends on your operating system.
 | macOS | /Users/username/libreoffice/qf/qf.conf |
 | Ubuntu | /home/username/libreoffice/qf/qf.conf |
 
-### Data Sources 
+### Configuration File Permissions
+Finally, it is recommended that you set the permissions on the configuration file
+so that only your user account has any access to the file. Your account should
+have read/write access by all other accounts should have NO access.
+
+### Data Sources
+The configuration file specifies a list of data sources for each category of
+ticker symbol: stock, mutf, etf, index. The following datasources are recognized.
 
 | datasource | Description |
 | :----      | :---        |
@@ -135,7 +158,14 @@ in the configuration file.
 {
   "loglevel": "debug",
   "cachedb": "~/libreoffice/qf/qf-cache-db.sqlite3",
-  "datasource": "stooq",
+  "datasources":
+  {
+    "comment": "List data sources in priority order",
+    "stock": ["tiingo", "stooq", "wsj", "iex"],
+    "mutf": ["wsj", "tiingo", "stooq", "iex"],
+    "etf": ["tiingo", "wsj", "stooq", "iex"],
+    "index": ["stooq", "wsj"]
+  },
   "stooqconf":
   {
     "tickerpostfix": ".us"
@@ -144,7 +174,7 @@ in the configuration file.
 ```
 
 #### Using Tiingo
-If you want to use Tiingo as your data source, you need to create an account
+If you want to use Tiingo as a data source, you need to create an account
 and get your API token. Go to [https://www.tiingo.com/](https://www.tiingo.com/)
 and click on the Sign-up button. After you get through the sign-up procedure
 you can get your API token. You should be able to get your API token from
@@ -157,13 +187,54 @@ Be sure to note the [limitations](https://api.tiingo.com/about/pricing) of a fre
 {
   "loglevel": "debug",
   "cachedb": "~/libreoffice/qf/qf-cache-db.sqlite3",
-  "datasource": "tiingo",
+  "datasources":
+  {
+    "comment": "List data sources in priority order",
+    "stock": ["tiingo", "stooq", "wsj", "iex"],
+    "mutf": ["wsj", "tiingo", "stooq", "iex"],
+    "etf": ["tiingo", "wsj", "stooq", "iex"],
+    "index": ["stooq", "wsj"]
+  },
   "tiingoconf":
   {
     "apitoken": "0123456789012345678901234567890123456789"
   }
 }
 ```
+
+When using Tiingo, it is vitally important that you should set the permissions 
+of the configuration file as described [above](#configuration-file-permissions).
+
+#### Forcing a Specific Data Source
+If for some reason you want to force a category to use a spceific data source,
+remove all but the desired data source from the category list.
+
+For example, this will limit stock category requests to Tiingo.
+
+```json
+{
+  "loglevel": "debug",
+  "cachedb": "~/libreoffice/qf/qf-cache-db.sqlite3",
+  "datasources":
+  {
+    "comment": "List data sources in priority order",
+    "stock": ["tiingo"],
+    "mutf": ["wsj", "tiingo", "stooq", "iex"],
+    "etf": ["tiingo", "wsj", "stooq", "iex"],
+    "index": ["stooq", "wsj"]
+  },
+  "tiingoconf":
+  {
+    "apitoken": "0123456789012345678901234567890123456789"
+  }
+}
+```
+
+#### Changing Data Source Priority
+You can change the priority of data sources by simply reordering the list
+and placing the highest priority source at the beginning. Data sources are
+tried in the order they appear in a category list.
+
 ## Example Files
 You can find a number of example files in the
 [examples folder](https://github.com/qalydon/qf-localc/tree/master/examples).

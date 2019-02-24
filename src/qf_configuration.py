@@ -50,15 +50,20 @@ class QConfiguration:
     cwd = ""
     qf_conf_exists = False
     qf_cache_db = "~/libreoffice/qf/qf-cache-db.sqlite3"
-    qf_data_source = "wsj"
-    qf_alt_data_source = "stooq"
-    # Experimental Stooq configuration
     qf_stooq_conf = {
         "tickerpostfix": ".us"
     }
     qf_tiingo_conf = {
         "apitoken": ""
     }
+    # Default data sources in priority order
+    qf_data_sources = {
+        "stock": ["stooq", "tiingo", "wsj", "iex"],
+        "mutf": ["wsj", "stooq", "iex", "tiingo"],
+        "etf": ["wsj", "stooq", "iex", "tiingo"],
+        "index": ["stooq", "wsj"]
+    }
+
 
     @classmethod
     def load(cls):
@@ -98,14 +103,6 @@ class QConfiguration:
                 cls.qf_cache_db = file_path + file_name
             logger.info("Using cache db %s", cls.qf_cache_db)
 
-            # Data source can be wsj, iex. In the future maybe stooq, triingo
-            if "datasource" in cfj:
-                cls.qf_data_source = cfj["datasource"].lower()
-            logger.info("Using data source %s", cls.qf_data_source)
-            if "altdatasource" in cfj:
-                cls.qf_alt_data_source = cfj["altdatasource"].lower()
-            logger.info("Using alternate data source %s", cls.qf_alt_data_source)
-
             # Stooq configuration
             if "stooqconf" in cfj:
                 cls.qf_stooq_conf = cfj["stooqconf"]
@@ -113,6 +110,16 @@ class QConfiguration:
             # Tiingo configuration
             if "tiingoconf" in cfj:
                 cls.qf_tiingo_conf = cfj["tiingoconf"]
+
+            # New list of prioritized data sources
+            if "datasources" in cfj:
+                # Overlay the defaults with config file settings
+                datasources = cfj["datasources"]
+                for category in datasources.keys():
+                    if category in cls.qf_data_sources.keys():
+                        cls.qf_data_sources[category] = datasources[category]
+                    else:
+                        logger.warning("%s is not a valid data source category", category)
 
             cf.close()
         except FileNotFoundError as ex:
@@ -159,9 +166,9 @@ class QConfiguration:
         conf["certifi"] = cls.cacerts
         conf["loglevel"] = cls.loglevel
         conf["cachedb"] = cls.qf_cache_db
-        conf["datasource"] = cls.qf_data_source
-        conf["altdatasource"] = cls.qf_alt_data_source
+        conf["datasources"] = cls.qf_data_sources
         conf["stooqconf"] = cls.qf_stooq_conf
+        conf["tiingoconf"] = cls.qf_tiingo_conf
 
         logger.debug("Saving configuration to %s", cls.full_file_path)
         cf = open(cls.full_file_path, "w")
@@ -178,9 +185,22 @@ class QConfiguration:
         cls.qf_conf_exists = True
 
     @classmethod
+    def get_datasources_list(cls, category):
+        """
+        Return a list of data sources for a given category of ticker symbol
+        :param category:
+        :return:
+        """
+        if category in ["", "stock"]:
+            return cls.qf_data_sources["stock"]
+        if category in ["mutf", "mutualfund"]:
+            return cls.qf_data_sources["mutf"]
+        return cls.qf_data_sources[category]
+
+    @classmethod
     def is_configured(cls):
         """
-        IEX is configured if the qf.conf file exists
+        Configured if the qf.conf file exists
         :return:
         """
 

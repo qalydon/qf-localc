@@ -82,7 +82,9 @@ class StooqDataSource(DataSourceBase):
                     if line:
                         a.append(line.split(','))
                 d = {}
-                for i in range(6):
+                # Only for the number of columns in the response.
+                # Some responses have more than Date/OHLC columns.
+                for i in range(len(a[0])):
                     key = a[0][i].lower().strip()
                     try:
                         d[key] = float(a[1][i])

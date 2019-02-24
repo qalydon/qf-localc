@@ -140,6 +140,7 @@ xcu.add_function("QFVersion", "Get extension version",
                  ])
 xcu.add_function("QFDataSource", "Get current data source",
                  [
+                     ('category', 'stock, etf, mutf, or index')
                  ])
 xcu.add_function("QFClosingPrice", "Get the closing price for a date",
                  [

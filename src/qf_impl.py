@@ -66,7 +66,6 @@ class QFImpl(unohelper.Base, XQFinance):
     """Define the main class for the QFinance LO Calc extension """
     def __init__( self, ctx ):
         self.ctx = ctx
-        DataSourceMgr.create_data_source()
         logger.debug("QFImpl initialized")
         logger.debug("self: %s", str(self))
         logger.debug("ctx: %s", str(ctx))
@@ -75,9 +74,14 @@ class QFImpl(unohelper.Base, XQFinance):
         logger.debug("QFVersion called %s", _qf_version)
         return _qf_version
 
-    def QFDataSource(self):
-        logger.debug("QFDataSource called %s", QConfiguration.qf_data_source)
-        return QConfiguration.qf_data_source
+    def QFDataSource(self, category):
+        if category and category in QConfiguration.qf_data_sources.keys():
+            logger.debug("QFDataSource called for category %s: %s", category, str(QConfiguration.qf_data_sources[category]))
+            return str(QConfiguration.qf_data_sources[category])
+
+        # The default is the data source list for stocks
+        logger.debug("QFDataSource called for default category: %s", str(QConfiguration.qf_data_sources["stock"]))
+        return str(QConfiguration.qf_data_sources["stock"])
 
     def QFClosingPrice(self, symbol, category, fordate):
         valid = self.__validate_parms(symbol, category, fordate)

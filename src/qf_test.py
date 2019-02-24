@@ -32,8 +32,6 @@ from qf_data_source_mgr import DataSourceMgr
 the_app_logger = AppLogger("qf-extension")
 logger = the_app_logger.getAppLogger()
 
-DataSourceMgr.create_data_source()
-
 # print("Price")
 # logger.info("Testing iex_price.get_price()")
 # j = get_price("aapl")
@@ -173,10 +171,19 @@ print("cache DB:", QConfiguration.qf_cache_db)
 # d = qf_hist_quote.low_price(ticker, "etf", "2018-11-30")
 # print("Low:", d)
 
-ticker = "mmm"
-for_date = "2018-12-06"
-opening = opening_price(ticker, "", for_date)
-closing = closing_price(ticker, "", for_date)
-volume = daily_volume(ticker, "", for_date)
+QConfiguration.load()
+for dsn in QConfiguration.get_datasources_list(""):
+    print(DataSourceMgr.get_data_source(dsn))
+
+ticker = "mint"
+for_date = "2019-02-22"
+opening = opening_price(ticker, "mutf", for_date)
+closing = closing_price(ticker, "mutf", for_date)
+volume = daily_volume(ticker, "mutf", for_date)
 
 print(opening, closing, volume)
+# print(closing)
+
+ticker = "djia"
+closing = closing_price(ticker, "index", for_date)
+print(ticker, closing)

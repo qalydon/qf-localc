@@ -9,8 +9,8 @@ module com {
                 {
                   // Returns extension version
                   any QFVersion();
-                  // Returns current data source
-                  any QFDataSource();
+                  // Returns current data source list for a category
+                  any QFDataSource( [in] any category );
                   // Returns an EOD price for a given date
                   any QFClosingPrice( [in] string symbol, [in] string category, [in] any fordate );
                   any QFOpeningPrice( [in] string symbol, [in] string category, [in] any fordate );

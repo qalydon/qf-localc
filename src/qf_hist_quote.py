@@ -19,6 +19,7 @@ from qf_app_logger import AppLogger
 from qf_extn_helper import normalize_date
 from qf_cache_db import CacheDB
 from qf_data_source_mgr import DataSourceMgr
+from qf_configuration import QConfiguration
 import json
 
 # Logger init
@@ -26,7 +27,7 @@ the_app_logger = AppLogger("qf-extension")
 logger = the_app_logger.getAppLogger()
 
 
-def __get_price_record(ticker, category, for_date):
+def _get_price_record(ticker, category, for_date):
     """
     Return the full cache record for given symbol, date
     :param ticker: Equity ticker symbol
@@ -48,21 +49,32 @@ def __get_price_record(ticker, category, for_date):
             r[key.lower()] = cr[key]
         return r
 
-    # Try data source
-    r = DataSourceMgr.qf_data_source_obj.get_historical_price_data(ticker, category, for_date)
-    if r:
-        # Verbose debugging
-        logger.debug(json.dumps(r))
-        # Cache result
-        CacheDB.insert_ohlc_price(ticker, for_date,
-                                  r["open"], r["high"], r["low"], r["close"], r["volume"],
-                                  0.0, DataSourceMgr.data_source())
-        return r
+    # Try data sources for the category
+    data_source_list = QConfiguration.get_datasources_list(category)
+    for dsn in data_source_list:
+        try:
+            r = DataSourceMgr.get_data_source(dsn).get_historical_price_data(ticker, category, for_date)
+            if r:
+                # Verbose debugging
+                logger.debug(json.dumps(r))
+                # Cache result
+                # Not every query returns a volume (e.g. indexes do not)
+                volume = 0
+                if "volume" in r.keys():
+                    volume = r["volume"]
+                CacheDB.insert_ohlc_price(ticker, for_date,
+                                          r["open"], r["high"], r["low"], r["close"], volume,
+                                          0.0, dsn)
+                return r
+        except Exception as ex:
+            logger.error("Exception %s", ex)
+            logger.error(str(ex))
 
+    logger.error("No data source for category %s returned a result", category)
     return None
 
 
-def __get_price(ticker, category, for_date, price_type):
+def _get_price(ticker, category, for_date, price_type):
     """
 
     :param ticker: Equity ticker symbol
@@ -72,7 +84,7 @@ def __get_price(ticker, category, for_date, price_type):
     :return: The closing price for the given date
     """
     try:
-        r = __get_price_record(ticker, category, for_date)
+        r = _get_price_record(ticker, category, for_date)
         if r:
             return r[price_type]
     except Exception as ex:
@@ -89,7 +101,7 @@ def closing_price(ticker, category, for_date):
     :param for_date: Either ISO format or LibreOffice date as a float
     :return: The closing price for the given date
     """
-    return __get_price(ticker, category, for_date, "close")
+    return _get_price(ticker, category, for_date, "close")
 
 
 def opening_price(ticker, category, for_date):
@@ -100,7 +112,7 @@ def opening_price(ticker, category, for_date):
     :param for_date: Either ISO format or LibreOffice date as a float
     :return: The closing price for the given date
     """
-    return __get_price(ticker, category, for_date, "open")
+    return _get_price(ticker, category, for_date, "open")
 
 
 def high_price(ticker, category, for_date):
@@ -111,7 +123,7 @@ def high_price(ticker, category, for_date):
     :param for_date: Either ISO format or LibreOffice date as a float
     :return: The closing price for the given date
     """
-    return __get_price(ticker, category, for_date, "high")
+    return _get_price(ticker, category, for_date, "high")
 
 
 def low_price(ticker, category, for_date):
@@ -122,7 +134,7 @@ def low_price(ticker, category, for_date):
     :param for_date: Either ISO format or LibreOffice date as a float
     :return: The closing price for the given date
     """
-    return __get_price(ticker, category, for_date, "low")
+    return _get_price(ticker, category, for_date, "low")
 
 
 def daily_volume(ticker, category, for_date):
@@ -133,4 +145,4 @@ def daily_volume(ticker, category, for_date):
     :param for_date: Either ISO format or LibreOffice date as a float
     :return: The closing price for the given date
     """
-    return __get_price(ticker, category, for_date, "volume")
+    return _get_price(ticker, category, for_date, "volume")

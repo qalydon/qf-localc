@@ -34,26 +34,18 @@ class DataSourceMgr:
     Singleton
     """
     qf_data_source_obj = None
+    _sources = {
+        "wsj": WSJDataSource(),
+        "iex": IEXDataSource(),
+        "stooq": StooqDataSource(),
+        "tiingo": TiingoDataSource()
+    }
 
     @classmethod
-    def create_data_source(cls):
-        if QConfiguration.qf_data_source == "wsj":
-            cls.qf_data_source_obj = WSJDataSource()
-        elif QConfiguration.qf_data_source == "iex":
-            cls.qf_data_source_obj = IEXDataSource()
-        elif QConfiguration.qf_data_source == "stooq":
-            cls.qf_data_source_obj = StooqDataSource()
-        elif QConfiguration.qf_data_source == "tiingo":
-            cls.qf_data_source_obj = TiingoDataSource()
+    def get_data_source(cls, data_source_name):
+        if data_source_name in cls._sources.keys():
+            logger.debug("Data source returned: %s", data_source_name)
+            return cls._sources[data_source_name]
         else:
-            logger.error("Unrecognized data source %s", QConfiguration.qf_data_source)
-            raise ValueError("Unrecognized data source {0}".format(QConfiguration.qf_data_source))
-        logger.debug("Data source created: %s", QConfiguration.qf_data_source)
-
-    @classmethod
-    def data_source(cls):
-        """
-        Returns the currently configured data source
-        :return:
-        """
-        return QConfiguration.qf_data_source
+            logger.error("Unrecognized data source name %s", data_source_name)
+            raise ValueError("Unrecognized data source name {0}".format(data_source_name))
