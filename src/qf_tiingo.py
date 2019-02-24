@@ -45,9 +45,19 @@ class TiingoDataSource(DataSourceBase):
         if category not in ["", "stock", "etf", "mutf"]:
             raise ValueError("Tiingo only supports categories stock, etf and mutf")
 
+        try:
+            apitoken = QConfiguration.qf_tiingo_conf["apitoken"]
+        except Exception as ex:
+            raise ValueError("Tiingo requires an API token")
+
         url = "https://api.tiingo.com/tiingo/daily/{0}/prices?startDate={1}&endDate={2}&token={3}"
-        url = url.format(symbol.upper(), for_date, for_date, QConfiguration.qf_tiingo_conf["apitoken"])
-        logger.debug("Calling %s", url)
+        url = url.format(symbol.upper(), for_date, for_date, apitoken)
+
+        # Log URL without API token
+        masked_url = "https://api.tiingo.com/tiingo/daily/{0}/prices?startDate={1}&endDate={2}&token={3}"
+        masked_url = masked_url.format(symbol.upper(), for_date, for_date, "*" * len(apitoken))
+        logger.debug("Calling %s", masked_url)
+
         try:
             with urllib.request.urlopen(url) as testfile:
                 json_data = testfile.read().decode()
@@ -55,7 +65,7 @@ class TiingoDataSource(DataSourceBase):
                 # Tiingo returns a JSON response that is a list.
                 return res[0]
         except Exception as ex:
-            pass
+            logger.error(str(ex))
 
         logger.error("Data for {0} on date {1} was not found".format(symbol.upper(), for_date))
         return {}
