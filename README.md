@@ -1,5 +1,5 @@
 # Qalydon Finance LibreOffice Calc Extension
-Copyright © 2018 by Dave Hocker as Qalydon
+Copyright © 2018, 2019 by Dave Hocker as Qalydon
 
 ## Overview
 This project implements a LibreOffice Calc (LOCalc) addin extension that can
@@ -201,6 +201,12 @@ Be sure to note the [limitations](https://api.tiingo.com/about/pricing) of a fre
   }
 }
 ```
+
+If you do not configure an API key, you will be prompted to enter an API key
+on the first attempt to use Tiingo. Whatever you enter will be saved as the
+API key.
+
+![API Key Entry](api_key_entry.png)
 
 When using Tiingo, it is vitally important that you should set the permissions 
 of the configuration file as described [above](#configuration-file-permissions).

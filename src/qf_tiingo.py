@@ -19,6 +19,7 @@
 from qf_app_logger import AppLogger
 from qf_data_source_base import DataSourceBase
 from qf_configuration import QConfiguration
+from qf_tiingo_support import api_key
 from datetime import datetime
 import urllib.request
 import json
@@ -48,7 +49,19 @@ class TiingoDataSource(DataSourceBase):
         try:
             apitoken = QConfiguration.qf_tiingo_conf["apitoken"]
         except Exception as ex:
-            raise ValueError("Tiingo requires an API token")
+            apitoken = None
+        if not apitoken:
+            # Ask for the API key
+            # Returns a tuple
+            res = api_key()
+            if res[0]:
+                # Save the API key in the configuration file
+                QConfiguration.qf_tiingo_conf["apitoken"] = res[1]
+                logger.info("Tiingo API key has been set")
+                QConfiguration.save()
+                apitoken = res[1]
+            else:
+                raise ValueError("Tiingo requires an API token")
 
         url = "https://api.tiingo.com/tiingo/daily/{0}/prices?startDate={1}&endDate={2}&token={3}"
         url = url.format(symbol.upper(), for_date, for_date, apitoken)
