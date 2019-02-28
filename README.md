@@ -82,11 +82,11 @@ The content of the configuration file is JSON and looks something like this (sho
   "cachedb": "~/libreoffice/qf/qf-cache-db.sqlite3",
   "datasources":
   {
-    "comment": "List data sources in priority order",
-    "stock": ["tiingo", "stooq", "wsj", "iex"],
-    "mutf": ["wsj", "tiingo", "stooq", "iex"],
-    "etf": ["tiingo", "wsj", "stooq", "iex"],
-    "index": ["stooq", "wsj"]
+    "comment": "List of data sources in priority order",
+    "stock": ["tiingo", "stooq", "wsj", "iex", "yahoo"],
+    "mutf": ["wsj", "tiingo", "stooq", "iex", "yahoo"],
+    "etf": ["tiingo", "wsj", "stooq", "iex", "yahoo"],
+    "index": ["stooq", "wsj", "yahoo"]
   },
   "stooqconf": 
   {
@@ -130,6 +130,7 @@ ticker symbol: stock, mutf, etf, index. The following datasources are recognized
 | iex        | IEX Trading web service |
 | stooq      | stooq.com web site |
 | tiingo     | See [Tiingo API](https://www.tiingo.com/data/api). <br/>Requires a free basic account or better. |
+| yahoo      | Yahoo financial web site |
 
 A word about data sources. 
 
@@ -138,10 +139,10 @@ to limit your use of their service. Therefore, your mileage may vary. Each of th
 data sources tend to have their own idiosyncrasies.
 
 Also, each data source **does not** support every kind of ticker symbol 
-(stock, mutual fund, ETF, index). The WSJ data source is the most comprehensive while
-the other sources typically only support stocks and ETFs (e.g. IEX and Stooq).
+(stock, mutual fund, ETF, index). The WSJ and Yahoo data sources seem to be the most comprehensive 
+while the other sources typically only support stocks and ETFs (e.g. IEX and Stooq).
 
-In the future, other data sources may be added (e.g. Tiingo).
+In the future, other data sources may be added.
 
 #### Using Stooq
 If you want to use Stooq as your data source, you need to be aware of the ticker
@@ -210,6 +211,11 @@ API key.
 
 When using Tiingo, it is vitally important that you should set the permissions 
 of the configuration file as described [above](#configuration-file-permissions).
+
+#### Yahoo
+The Yahoo data source seems to support all ticker symbol categories. However, 
+it is implemented using a technique that is known as web page "screen scraping".
+Screen scraping is subject to breakage if/when the web page changes.
 
 #### Forcing a Specific Data Source
 If for some reason you want to force a category to use a spceific data source,

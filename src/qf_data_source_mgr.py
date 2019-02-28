@@ -21,6 +21,7 @@ from qf_wsj import WSJDataSource
 from qf_iex import IEXDataSource
 from qf_stooq import StooqDataSource
 from qf_tiingo import TiingoDataSource
+from qf_yahoo import YahooDataSource
 from qf_app_logger import AppLogger
 
 
@@ -38,7 +39,8 @@ class DataSourceMgr:
         "wsj": WSJDataSource(),
         "iex": IEXDataSource(),
         "stooq": StooqDataSource(),
-        "tiingo": TiingoDataSource()
+        "tiingo": TiingoDataSource(),
+        "yahoo": YahooDataSource()
     }
 
     @classmethod
