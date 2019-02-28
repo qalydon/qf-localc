@@ -104,6 +104,10 @@ The content of the configuration file is JSON and looks something like this (sho
   "tiingoconf":
   {
     "apitoken": "0123456789012345678901234567890123456789"
+  },
+  "yahooconf":
+  {
+    "pacing": "0.200"
   }
 }
 ```
@@ -115,6 +119,7 @@ The content of the configuration file is JSON and looks something like this (sho
 | datasources | The extension can use several sources for each ticker symbol category data. See the [list](#data-sources) below.
 | stooqconf | Specific configuration for the Stooq data source. See [below](#using-stooq). | 
 | tiingoconf | Specific configuration for the Tiingo data source. See [below](#using-tiingo). |
+| yahooconf | Specific configuration fot the Yahoo data source. See [below](#yahoo).
 
 The location of the configuration file depends on your operating system.
 
@@ -171,10 +176,10 @@ in the configuration file.
   "datasources":
   {
     "comment": "List data sources in priority order",
-    "stock": ["tiingo", "stooq", "wsj", "iex"],
-    "mutf": ["wsj", "tiingo", "stooq", "iex"],
-    "etf": ["tiingo", "wsj", "stooq", "iex"],
-    "index": ["stooq", "wsj"]
+    "stock": ["tiingo", "stooq", "wsj", "iex", "yahoo"],
+    "mutf": ["wsj", "tiingo", "stooq", "iex", "yahoo"],
+    "etf": ["tiingo", "wsj", "stooq", "iex", "yahoo"],
+    "index": ["stooq", "wsj", "yahoo"]
   },
   "stooqconf":
   {
@@ -200,10 +205,10 @@ Be sure to note the [limitations](https://api.tiingo.com/about/pricing) of a fre
   "datasources":
   {
     "comment": "List data sources in priority order",
-    "stock": ["tiingo", "stooq", "wsj", "iex"],
-    "mutf": ["wsj", "tiingo", "stooq", "iex"],
-    "etf": ["tiingo", "wsj", "stooq", "iex"],
-    "index": ["stooq", "wsj"]
+    "stock": ["tiingo", "stooq", "wsj", "iex", "yahoo"],
+    "mutf": ["wsj", "tiingo", "stooq", "iex", "yahoo"],
+    "etf": ["tiingo", "wsj", "stooq", "iex", "yahoo"],
+    "index": ["stooq", "wsj", "yahoo"]
   },
   "tiingoconf":
   {
@@ -225,6 +230,30 @@ of the configuration file as described [above](#configuration-file-permissions).
 The Yahoo data source seems to support all ticker symbol categories. However, 
 it is implemented using a technique that is known as web page "screen scraping".
 Screen scraping is subject to breakage if/when the web page changes.
+
+It is unclear how or if Yahoo throttles requests. If you find that Yahoo is
+throttling your requests, use the Yahoo configuration section to specify a pacing value.
+The default setting is 0.200 seconds (200 ms). You might be able to run with a
+smaller pacing value, but anything below 0.100 is NOT recommended.
+
+```json
+{
+  "loglevel": "debug",
+  "cachedb": "~/libreoffice/qf/qf-cache-db.sqlite3",
+  "datasources":
+  {
+    "comment": "List data sources in priority order",
+    "stock": ["tiingo", "stooq", "wsj", "iex", "yahoo"],
+    "mutf": ["wsj", "tiingo", "stooq", "iex", "yahoo"],
+    "etf": ["tiingo", "wsj", "stooq", "iex", "yahoo"],
+    "index": ["stooq", "wsj", "yahoo"]
+  },
+  "yahooconf":
+  {
+    "pacing": 0.200
+  }
+}
+```
 
 #### Forcing a Specific Data Source
 If for some reason you want to force a category to use a spceific data source,

@@ -56,6 +56,9 @@ class QConfiguration:
     qf_tiingo_conf = {
         "apitoken": ""
     }
+    qf_yahoo_conf = {
+        "pacing": 0.200
+    }
     # Default data sources in priority order
     qf_data_sources = {
         "stock": ["stooq", "wsj", "iex", "tiingo", "yahoo"],
@@ -110,6 +113,10 @@ class QConfiguration:
             # Tiingo configuration
             if "tiingoconf" in cfj:
                 cls.qf_tiingo_conf = cfj["tiingoconf"]
+
+            # Yahoo configuration
+            if "yahooconf" in cfj:
+                cls.qf_yahoo_conf = cfj["yahooconf"]
 
             # New list of prioritized data sources
             if "datasources" in cfj:

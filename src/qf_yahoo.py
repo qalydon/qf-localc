@@ -36,6 +36,7 @@ import datetime
 import urllib.request
 from qf_app_logger import AppLogger
 from qf_data_source_base import DataSourceBase
+from qf_configuration import QConfiguration
 
 # Logger init
 the_app_logger = AppLogger("qf-extension")
@@ -56,7 +57,7 @@ class YahooDataSource(DataSourceBase):
     # and NO attempt is made to syncrhonize access to it. The
     # worst outcome is that extra pacing will occur.
     _last_request_time = datetime.datetime.now()
-    _pause = 0.200 # 100 ms in seconds
+    _pause = float(QConfiguration.qf_yahoo_conf["pacing"]) # float, seconds (e.g. 0.200)
 
     # Not sure we need the Connection header.
     # The User-Agent header probably makes requests look like they came from a browser
@@ -108,7 +109,7 @@ class YahooDataSource(DataSourceBase):
         elapsed = datetime.datetime.now() - YahooDataSource._last_request_time
         if elapsed.total_seconds() < YahooDataSource._pause:
             time.sleep(YahooDataSource._pause)
-            logger.debug("Pacing...")
+            logger.debug("Pacing %f...", YahooDataSource._pause)
         YahooDataSource._last_request_time = datetime.datetime.now()
 
         # Send the request and read the response
