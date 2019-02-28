@@ -1,6 +1,15 @@
 # Qalydon Finance LibreOffice Calc Extension
 Copyright © 2018, 2019 by Dave Hocker as Qalydon
 
+## Contents
+* [Overview](#overview)
+* [Installation](#installation)
+* [Configuration File](#configuration-file)
+* [Data sources](#data-sources)
+* [Using LoCalc Functions](#using-localc-functions)
+* [LoCalc Functions](#extension-localc-functions)
+* [References](#references)
+
 ## Overview
 This project implements a LibreOffice Calc (LOCalc) addin extension that can
 retrieve stock market data from various free sources. Currently, most of the 
