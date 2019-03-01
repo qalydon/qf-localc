@@ -49,6 +49,7 @@ class CacheDB:
             logger.info("Create database")
             conn = sqlite3.connect(full_file_path)
             conn.execute("CREATE TABLE SymbolDate (Symbol text not null, Date text not null, Open real, High real, Low real, Close real, Volume integer, Adj_Close real, Source text, PRIMARY KEY(Symbol,Date))")
+            conn.execute("CREATE TABLE TTMDividends (Symbol TEXT NOT NULL, CalcDate TEXT NOT NULL, Amount REAL NOT NULL, PRIMARY KEY(Symbol,CalcDate))")
         else:
             conn = sqlite3.connect(full_file_path)
 
@@ -110,5 +111,37 @@ class CacheDB:
         # print ("Cache data:", symbol, tgtdate, close)
         conn.execute("INSERT INTO SymbolDate values (?,?,?,?,?,?,?,?,?)",
                      [symbol, tgtdate, open_price, high_price, low_price, closing_price, volume, adj_closing_price, data_source])
+        conn.commit()
+        conn.close()
+
+    @classmethod
+    def lookup_ttm_dividend_by_date(cls, symbol, tgtdate):
+        """
+        Look up cached historical data for a given symbol/date pair.
+        :param symbol:
+        :param tgtdate:
+        :return: Returns the cached DB record. If no record is found, returns None.
+        """
+        conn = cls.__open_yh_cache()
+        rset = conn.execute("SELECT * from TTMDividends where Symbol=? and CalcDate=?", [symbol, tgtdate])
+        r = rset.fetchone()
+        conn.close()
+        # r will be None if no record was found
+        return r
+
+    @classmethod
+    def insert_ttm_dividend(cls, symbol, tgtdate, dividend):
+        """
+        Insert a new cache record in the cache DB. The Google service does not
+        produce all data values for every symbol (e.g. mutual funds only have closing prices).
+        to preserve backward compatiblity in the cache DB zero values are used for unavailable values.
+        :param symbol:
+        :param tgtdate:
+        :param close:
+        :return:
+        """
+        conn = cls.__open_yh_cache()
+        # print ("Cache data:", symbol, tgtdate, close)
+        conn.execute("INSERT INTO TTMdividends values (?,?,?)", [symbol, tgtdate, dividend])
         conn.commit()
         conn.close()
