@@ -113,6 +113,7 @@ shutil.copy("src/description-en-US.txt", "build/")
 shutil.copy("src/description.xml", "build/")
 shutil.copy("src/qf_impl.py", "build/")
 shutil.copy("src/qf_hist_quote.py", "build/")
+shutil.copy("src/qf_dividends.py", "build/")
 shutil.copy("src/qf_stooq.py", "build/")
 shutil.copy("src/qf_wsj.py", "build/")
 shutil.copy("src/qf_iex.py", "build/")
@@ -173,6 +174,11 @@ xcu.add_function("QFDayVolume", "Get the trading volume for a date",
                      ('symbol', 'The stock ticker symbol for the volume'),
                      ('category', 'stock, etf, mutf, or index'),
                      ('fordate', 'The date YYYY-MM-DD')
+                 ])
+xcu.add_function("QFTTMDividend", "Get the trailing 12 months dividend",
+                 [
+                     ('symbol', 'The stock ticker symbol for the dividend'),
+                     ('fordate', 'The ending date of the 12 month period YYYY-MM-DD')
                  ])
 # xcu.add_function("IexHistoricalQuote", "Get a closing quote for a date",
 #                  [

@@ -64,7 +64,8 @@ class QConfiguration:
         "stock": ["stooq", "wsj", "iex", "tiingo", "yahoo"],
         "mutf": ["wsj", "stooq", "iex", "tiingo", "yahoo"],
         "etf": ["wsj", "stooq", "iex", "tiingo", "yahoo"],
-        "index": ["stooq", "wsj", "yahoo"]
+        "index": ["stooq", "wsj", "yahoo"],
+        "dividend": ["iex"]
     }
 
 

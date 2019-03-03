@@ -23,6 +23,7 @@ from qf_app_logger import AppLogger
 from qf_configuration import QConfiguration
 from qf_extn_helper import qf_version
 from qf_hist_quote import closing_price, opening_price, high_price, low_price, daily_volume
+from qf_dividends import ttm_dividend
 from qf_data_source_mgr import DataSourceMgr
 # import datetime
 # import time
@@ -172,18 +173,11 @@ print("cache DB:", QConfiguration.qf_cache_db)
 # print("Low:", d)
 
 QConfiguration.load()
-for dsn in QConfiguration.get_datasources_list(""):
+print("Dividend data sources")
+for dsn in QConfiguration.get_datasources_list("dividend"):
     print(DataSourceMgr.get_data_source(dsn))
 
-ticker = "mint"
-for_date = "2019-02-22"
-opening = opening_price(ticker, "mutf", for_date)
-closing = closing_price(ticker, "mutf", for_date)
-volume = daily_volume(ticker, "mutf", for_date)
-
-print(opening, closing, volume)
-# print(closing)
-
-ticker = "djia"
-closing = closing_price(ticker, "index", for_date)
-print(ticker, closing)
+ticker = "ibm"
+for_date = "2019-02-28"
+dividend = ttm_dividend(ticker, "2019-02-28")
+print(dividend)

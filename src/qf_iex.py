@@ -1,6 +1,6 @@
 # coding: utf-8
 #
-# qf_iex - Implements the IEX based data acquisition
+# qf_iex - Implements the IEX Version 1.0 API based data acquisition
 # Copyright © 2018  Dave Hocker (email: Qalydon17@gmail.com)
 #
 # This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,8 @@
 
 from qf_app_logger import AppLogger
 from qf_data_source_base import DataSourceBase
-from datetime import datetime
+from qf_extn_helper import normalize_date
+from datetime import datetime, timedelta
 import urllib.request
 import json
 
@@ -28,6 +29,15 @@ logger = the_app_logger.getAppLogger()
 
 
 class IEXDataSource(DataSourceBase):
+    # Period to days conversion
+    _period_lookup_table = {
+        "1m": 30,
+        "3m": 90,
+        "6m": 180,
+        "1y": 365,
+        "2y": 365 * 2,
+        "5y": 365 * 5
+    }
     def __init__(self):
         super(IEXDataSource, self).__init__()
 
@@ -79,3 +89,56 @@ class IEXDataSource(DataSourceBase):
 
         logger.error("Chart data for {0} on date {1} was not found".format(symbol.upper(), for_date))
         return {}
+
+    def get_dividend_data(self, symbol, for_date, period):
+        """
+        Get dividend distributions for the given symbol and period. During the development of
+        this method it was discovered that the IEX dividend data available through the
+        IEX 1.0 API has not been updated since March 2018. Apparently, up-to-date dividend
+        data can only be obtained through the new IEX Cloud API. The new API has limited free
+        use with an emphasis of moving users to a pay wall (https://iexcloud.io/pricing/).
+        :param symbol: ticker symbol
+        :param for_date: period ending date
+        :param period: 1m, 3m, 6m, 1y, 2y, 5y. TTM = 1y.
+        :return: list of dividend distributions in period. See https://iextrading.com/developer/docs/#dividends
+        for a definition of the returned list.
+        [
+            {
+                "exDate": "2018-02-08",
+                "paymentDate": "2018-03-10",
+                "recordDate": "2018-02-09",
+                "declaredDate": "2018-01-30",
+                "amount": 1.5,
+                "flag": "FI",
+                "type": "Dividend income",
+                "qualified": "",
+                "indicated": ""
+            },
+            ...
+        ]
+        """
+        # Fetch max amount of data. We'll filter it as necessary.
+        url = "https://api.iextrading.com/1.0/stock/{0}/dividends/{1}".format(symbol.upper(), "5y")
+        logger.debug("Calling %s", url)
+
+        filtered_list = []
+        try:
+            with urllib.request.urlopen(url) as testfile:
+                json_data = testfile.read().decode()
+                # IEX returns a list of dicts where each dict is a dividend distribution.
+                res = json.loads(json_data)
+
+                end_date = datetime.strptime(normalize_date(for_date), "%Y-%m-%d")
+                start_date = end_date - timedelta(days=IEXDataSource._period_lookup_table[period])
+
+                # Filter the results list to those distributions within the period
+                for dist in res:
+                    dist_date = datetime.strptime(dist["declaredDate"], "%Y-%m-%d")
+                    if (start_date < dist_date) and (dist_date < end_date):
+                        filtered_list.append(dist)
+        except Exception as ex:
+            filtered_list = []
+            logger.error(ex)
+            logger.error("Dividend data for {0} period {1} was not returned".format(symbol.upper(), period))
+
+        return filtered_list

@@ -40,3 +40,13 @@ class DataSourceBase:
         :return: OHLC with date in JSON format
         """
         return {}
+
+    def get_dividend_data(self, symbol, for_date, period):
+        """
+        Get dividend distributions for the given symbol and period
+        :param symbol: ticker symbol
+        :param for_date: period ending date
+        :param period: 1m, 3m, 6m, 1y, 2y, 5y. TTM = 1y.
+        :return: list of dividend distributions
+        """
+        raise NotImplementedError("This data source does not support dividend data")

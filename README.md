@@ -55,6 +55,14 @@ GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007. Refer to the
 [LICENSE.md](https://github.com/qalydon/qf-localc/blob/master/README.md)
 file for complete details.
 
+## Attribution
+Some data provided for free by [IEX](https://iextrading.com/developer).
+Some data [Powered by IEX Cloud](https://iexcloud.io).
+
+By using the IEX data source, you agree to the
+[IEX terms of service](https://iextrading.com/api-exhibit-a) and
+[IEX Cloud terms of service](https://iexcloud.io/terms/).
+
 ## Download
 Download the latest **qf.oxt** (the add-in file) from
 [here](https://github.com/qalydon/qf-localc/releases).
@@ -95,7 +103,8 @@ The content of the configuration file is JSON and looks something like this (sho
     "stock": ["tiingo", "stooq", "wsj", "iex", "yahoo"],
     "mutf": ["wsj", "tiingo", "stooq", "iex", "yahoo"],
     "etf": ["tiingo", "wsj", "stooq", "iex", "yahoo"],
-    "index": ["stooq", "wsj", "yahoo"]
+    "index": ["stooq", "wsj", "yahoo"],
+    "dividend": ["iex"]
   },
   "stooqconf": 
   {
@@ -141,7 +150,7 @@ ticker symbol: stock, mutf, etf, index. The following datasources are recognized
 | datasource | Description |
 | :----      | :---        |
 | wsj        | Wall Street Journal web site (default) |
-| iex        | IEX Trading web service |
+| iex        | IEX Version 1.0 API from Inverstor's Exchange trading web service |
 | stooq      | stooq.com web site |
 | tiingo     | See [Tiingo API](https://www.tiingo.com/data/api). <br/>Requires a free basic account or better. |
 | yahoo      | Yahoo financial web site |
@@ -254,6 +263,13 @@ smaller pacing value, but anything below 0.100 is NOT recommended.
   }
 }
 ```
+
+#### IEX 1.0
+The IEX Version 1.0 API offers a large amount of data. In addition to 
+historical stock prices, it offers
+historical dividend information. Unfortunately, the data is only good up to
+March 2018. As of that date, IEX stopped updating dividend information in favor
+of moving users to its new [IEX Cloud API](https://iexcloud.io).
 
 #### Forcing a Specific Data Source
 If for some reason you want to force a category to use a spceific data source,
@@ -403,6 +419,17 @@ symbol: The ticker symbol for the equity whose day volume is to be retrieved.
 category: stock, mutf or mututalfund, etf, index.
 
 date: The date for the dat volume in ISO format (YYYY-MM-DD)
+
+### QFTTMDividend
+Returns the trailing 12 month dividend for a ticker symbol.
+The 12 month period is the 12 months preceding the given date.
+```
+=QFTTMDividend(symbol, date)
+```
+
+symbol: The ticker symbol for the equity whose dividend is to be retrieved.
+
+date: The ending date for the 12 month period, in ISO format (YYYY-MM-DD)
 
 ## Utility Functions
 

@@ -43,6 +43,7 @@ try:
     from qf_configuration import QConfiguration
     from qf_extn_helper import qf_version, normalize_date
     import qf_hist_quote
+    import qf_dividends
     from qf_data_source_mgr import DataSourceMgr
 
     # Logger init
@@ -116,6 +117,13 @@ class QFImpl(unohelper.Base, XQFinance):
         valid = self.__validate_parms(symbol, category, fordate)
         if (valid[0]):
             return qf_hist_quote.daily_volume(symbol, category, fordate)
+        return valid[1]
+
+    def QFTTMDividend(self, symbol, fordate):
+        logger.debug("QFTTMDividend called %s %s", symbol, fordate)
+        valid = self.__validate_parms(symbol, "", fordate)
+        if (valid[0]):
+            return qf_dividends.ttm_dividend(symbol, fordate)
         return valid[1]
 
     def __validate_parms(self, symbol, category, fordate):
