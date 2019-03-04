@@ -133,7 +133,7 @@ class WSJDataSource(DataSourceBase):
 
 
 if __name__ == '__main__':
-    wsj = WSJDatasource()
+    wsj = WSJDataSource()
 
     d = wsj.get_historical_price_data("ussbx", "mutualfund", "2018-11-30")
     print("ussbx", d)
