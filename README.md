@@ -104,7 +104,7 @@ The content of the configuration file is JSON and looks something like this (sho
     "mutf": ["wsj", "tiingo", "stooq", "iex", "yahoo"],
     "etf": ["tiingo", "wsj", "stooq", "iex", "yahoo"],
     "index": ["stooq", "wsj", "yahoo"],
-    "dividend": ["iex"]
+    "dividend": ["yahoo", "iex"]
   },
   "stooqconf": 
   {
@@ -188,7 +188,8 @@ in the configuration file.
     "stock": ["tiingo", "stooq", "wsj", "iex", "yahoo"],
     "mutf": ["wsj", "tiingo", "stooq", "iex", "yahoo"],
     "etf": ["tiingo", "wsj", "stooq", "iex", "yahoo"],
-    "index": ["stooq", "wsj", "yahoo"]
+    "index": ["stooq", "wsj", "yahoo"],
+    "dividend": ["yahoo", "iex"]
   },
   "stooqconf":
   {
@@ -217,7 +218,8 @@ Be sure to note the [limitations](https://api.tiingo.com/about/pricing) of a fre
     "stock": ["tiingo", "stooq", "wsj", "iex", "yahoo"],
     "mutf": ["wsj", "tiingo", "stooq", "iex", "yahoo"],
     "etf": ["tiingo", "wsj", "stooq", "iex", "yahoo"],
-    "index": ["stooq", "wsj", "yahoo"]
+    "index": ["stooq", "wsj", "yahoo"],
+    "dividend": ["yahoo", "iex"]
   },
   "tiingoconf":
   {
@@ -255,7 +257,8 @@ smaller pacing value, but anything below 0.100 is NOT recommended.
     "stock": ["tiingo", "stooq", "wsj", "iex", "yahoo"],
     "mutf": ["wsj", "tiingo", "stooq", "iex", "yahoo"],
     "etf": ["tiingo", "wsj", "stooq", "iex", "yahoo"],
-    "index": ["stooq", "wsj", "yahoo"]
+    "index": ["stooq", "wsj", "yahoo"],
+    "dividend": ["yahoo", "iex"]
   },
   "yahooconf":
   {
@@ -272,7 +275,7 @@ March 2018. As of that date, IEX stopped updating dividend information in favor
 of moving users to its new [IEX Cloud API](https://iexcloud.io).
 
 #### Forcing a Specific Data Source
-If for some reason you want to force a category to use a spceific data source,
+If for some reason you want to force a category to use a specific data source,
 remove all but the desired data source from the category list.
 
 For example, this will limit stock category requests to Tiingo.

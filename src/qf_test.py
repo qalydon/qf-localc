@@ -177,7 +177,7 @@ print("Dividend data sources")
 for dsn in QConfiguration.get_datasources_list("dividend"):
     print(DataSourceMgr.get_data_source(dsn))
 
-ticker = "ibm"
+ticker = "vym"
 for_date = "2019-02-28"
 dividend = ttm_dividend(ticker, "2019-02-28")
 print(dividend)

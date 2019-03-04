@@ -71,15 +71,6 @@ class YahooDataSource(DataSourceBase):
     def __init__(self):
         super(YahooDataSource, self).__init__()
 
-    @property
-    def _url(self):
-        """
-        Template URL for Yahoo historical data web page
-        :return:
-        """
-        # The template contains substituion points for ticker, starting date and ending date
-        return 'https://finance.yahoo.com/quote/{}/history?period1={}&period2={}&interval=1d&filter=history&frequency=1d'
-
     def get_historical_price_data(self, symbol, category, for_date):
         """
         Essentially a page scrape of a Yahoo page containing historical data
@@ -100,7 +91,8 @@ class YahooDataSource(DataSourceBase):
         unix_for_date = int(time.mktime(dt.timetuple()))
         unix_for_date += four_hours_in_seconds
 
-        url = self._url.format(symbol, unix_for_date, unix_for_date)
+        url = "https://finance.yahoo.com/quote/{}/history?period1={}&period2={}&interval=1d&filter=history&frequency=1d"
+        url = url.format(symbol, unix_for_date, unix_for_date)
         # url => https://finance.yahoo.com/quote/AAPL/history?period1=1519753902&period2=1551289902&interval=1d&filter=history&frequency=1d
         req = urllib.request.Request(url, headers=YahooDataSource._headers)
         logger.debug("Calling %s", url)
@@ -142,6 +134,62 @@ class YahooDataSource(DataSourceBase):
         prices["date"] = unix_date.strftime("%Y-%m-%d")
 
         return prices
+
+    def get_dividend_data(self, symbol, for_date, period):
+        """
+        Essentially a page scrape of a Yahoo page containing historical data
+        :param symbol: ticker symbol
+        :param for_date: yyyy-mm-dd ISO format
+        :return: dict of dividend records for period
+        """
+
+        # Convert for_date to Unix time.  The 4 hour adjustment is a mystery (from original code).
+        four_hours_in_seconds = 14400
+        dt = datetime.datetime.strptime(for_date, "%Y-%m-%d")
+        unix_end_date = int(time.mktime(dt.timetuple()))
+        unix_end_date += four_hours_in_seconds
+        # TODO Convert period into number of days
+        unix_start_date = unix_end_date - (365 * 24 * 60 * 60)
+
+        url = "https://finance.yahoo.com/quote/{}/history?period1={}&period2={}&interval=div%7Csplit&filter=div&frequency={}"
+        url = url.format(symbol, unix_start_date, unix_end_date, period)
+        req = urllib.request.Request(url, headers=YahooDataSource._headers)
+        logger.debug("Calling %s", url)
+
+        # Apply pacing, avoid getting throttled
+        elapsed = datetime.datetime.now() - YahooDataSource._last_request_time
+        if elapsed.total_seconds() < YahooDataSource._pause:
+            time.sleep(YahooDataSource._pause)
+            logger.debug("Pacing %f...", YahooDataSource._pause)
+        YahooDataSource._last_request_time = datetime.datetime.now()
+
+        # Send the request and read the response
+        try:
+            with urllib.request.urlopen(req) as page_source:
+                resp = page_source.read().decode()
+        except Exception as ex:
+            logger.error(ex)
+            raise ex
+
+        # This page scraping technique is highly subject to breakage. It is likely
+        # that changes will be required at the least expected time :-)
+        # Here is some regex magic. It finds the data rows in the middle of the web page.
+        ptrn = r'root\.App\.main = (.*?);\n}\(this\)\);'
+        try:
+            j = json.loads(re.search(ptrn, resp, re.DOTALL).group(1))
+            data = j['context']['dispatcher']['stores']['HistoricalPriceStore']
+        except Exception as ex:
+            logger.error(ex)
+            msg = 'No data fetched for symbol {} using {}'
+            raise ValueError(msg.format(symbol, "Yahoo"))
+
+        # Select all dividend records
+        dividends = []
+        for r in data["prices"]:
+            if "type" in r.keys() and r["type"].lower() == "dividend":
+                dividends.append(r)
+
+        return dividends
 
 
 if __name__ == '__main__':
