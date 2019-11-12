@@ -61,9 +61,9 @@ class QConfiguration:
     }
     # Default data sources in priority order
     qf_data_sources = {
-        "stock": ["stooq", "wsj", "iex", "tiingo", "yahoo"],
-        "mutf": ["wsj", "stooq", "iex", "tiingo", "yahoo"],
-        "etf": ["wsj", "stooq", "iex", "tiingo", "yahoo"],
+        "stock": ["stooq", "wsj", "tiingo", "yahoo"],
+        "mutf": ["wsj", "stooq", "tiingo", "yahoo"],
+        "etf": ["wsj", "stooq", "tiingo", "yahoo"],
         "index": ["stooq", "wsj", "yahoo"],
         "dividend": ["yahoo"]
     }
