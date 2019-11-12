@@ -20,7 +20,7 @@ There is no support for anything real-time or quasi-real-time.
 
 The intent here is to provide a set of abstract functions that are independent
 of the underlying data source(s). Previous LOCalc extensions I have written
-are dependent on a specific data source (e.g. Intrinio or IEX). When
+are dependent on a specific data source (e.g. Intrinio). When
 The data sources change, the extension functions are frequently impacted
 and thus, any using spreadsheet is impacted. Some of the extension
 functions are actually modeled on the data source's API.
@@ -54,14 +54,6 @@ Testing is performed on the latest general distribution release.
 GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007. Refer to the
 [LICENSE.md](https://github.com/qalydon/qf-localc/blob/master/README.md)
 file for complete details.
-
-## Attribution
-Some data provided for free by [IEX](https://iextrading.com/developer).
-Some data [Powered by IEX Cloud](https://iexcloud.io).
-
-By using the IEX data source, you agree to the
-[IEX terms of service](https://iextrading.com/api-exhibit-a) and
-[IEX Cloud terms of service](https://iexcloud.io/terms/).
 
 ## Download
 Download the latest **qf.oxt** (the add-in file) from
@@ -100,11 +92,11 @@ The content of the configuration file is JSON and looks something like this (sho
   "datasources":
   {
     "comment": "List of data sources in priority order",
-    "stock": ["tiingo", "stooq", "wsj", "iex", "yahoo"],
-    "mutf": ["wsj", "tiingo", "stooq", "iex", "yahoo"],
-    "etf": ["tiingo", "wsj", "stooq", "iex", "yahoo"],
+    "stock": ["tiingo", "stooq", "wsj", "yahoo"],
+    "mutf": ["wsj", "tiingo", "stooq", "yahoo"],
+    "etf": ["tiingo", "wsj", "stooq", "yahoo"],
     "index": ["stooq", "wsj", "yahoo"],
-    "dividend": ["yahoo", "iex"]
+    "dividend": ["yahoo"]
   },
   "stooqconf": 
   {
@@ -150,7 +142,6 @@ ticker symbol: stock, mutf, etf, index. The following datasources are recognized
 | datasource | Description |
 | :----      | :---        |
 | wsj        | Wall Street Journal web site (default) |
-| iex        | IEX Version 1.0 API from Inverstor's Exchange trading web service |
 | stooq      | stooq.com web site |
 | tiingo     | See [Tiingo API](https://www.tiingo.com/data/api). <br/>Requires a free basic account or better. |
 | yahoo      | Yahoo financial web site |
@@ -185,11 +176,11 @@ in the configuration file.
   "datasources":
   {
     "comment": "List data sources in priority order",
-    "stock": ["tiingo", "stooq", "wsj", "iex", "yahoo"],
-    "mutf": ["wsj", "tiingo", "stooq", "iex", "yahoo"],
-    "etf": ["tiingo", "wsj", "stooq", "iex", "yahoo"],
+    "stock": ["tiingo", "stooq", "wsj", "yahoo"],
+    "mutf": ["wsj", "tiingo", "stooq", "yahoo"],
+    "etf": ["tiingo", "wsj", "stooq", "yahoo"],
     "index": ["stooq", "wsj", "yahoo"],
-    "dividend": ["yahoo", "iex"]
+    "dividend": ["yahoo"]
   },
   "stooqconf":
   {
@@ -215,11 +206,11 @@ Be sure to note the [limitations](https://api.tiingo.com/about/pricing) of a fre
   "datasources":
   {
     "comment": "List data sources in priority order",
-    "stock": ["tiingo", "stooq", "wsj", "iex", "yahoo"],
-    "mutf": ["wsj", "tiingo", "stooq", "iex", "yahoo"],
-    "etf": ["tiingo", "wsj", "stooq", "iex", "yahoo"],
+    "stock": ["tiingo", "stooq", "wsj", "yahoo"],
+    "mutf": ["wsj", "tiingo", "stooq", "yahoo"],
+    "etf": ["tiingo", "wsj", "stooq", "yahoo"],
     "index": ["stooq", "wsj", "yahoo"],
-    "dividend": ["yahoo", "iex"]
+    "dividend": ["yahoo"]
   },
   "tiingoconf":
   {
@@ -254,11 +245,11 @@ smaller pacing value, but anything below 0.100 is NOT recommended.
   "datasources":
   {
     "comment": "List data sources in priority order",
-    "stock": ["tiingo", "stooq", "wsj", "iex", "yahoo"],
-    "mutf": ["wsj", "tiingo", "stooq", "iex", "yahoo"],
-    "etf": ["tiingo", "wsj", "stooq", "iex", "yahoo"],
+    "stock": ["tiingo", "stooq", "wsj", "yahoo"],
+    "mutf": ["wsj", "tiingo", "stooq", "yahoo"],
+    "etf": ["tiingo", "wsj", "stooq", "yahoo"],
     "index": ["stooq", "wsj", "yahoo"],
-    "dividend": ["yahoo", "iex"]
+    "dividend": ["yahoo"]
   },
   "yahooconf":
   {
@@ -266,13 +257,6 @@ smaller pacing value, but anything below 0.100 is NOT recommended.
   }
 }
 ```
-
-#### IEX 1.0
-The IEX Version 1.0 API offers a large amount of data. In addition to 
-historical stock prices, it offers
-historical dividend information. Unfortunately, the data is only good up to
-March 2018. As of that date, IEX stopped updating dividend information in favor
-of moving users to its new [IEX Cloud API](https://iexcloud.io).
 
 #### Forcing a Specific Data Source
 If for some reason you want to force a category to use a specific data source,
@@ -288,8 +272,8 @@ For example, this will limit stock category requests to Tiingo.
   {
     "comment": "List data sources in priority order",
     "stock": ["tiingo"],
-    "mutf": ["wsj", "tiingo", "stooq", "iex"],
-    "etf": ["tiingo", "wsj", "stooq", "iex"],
+    "mutf": ["wsj", "tiingo", "stooq"],
+    "etf": ["tiingo", "wsj", "stooq"],
     "index": ["stooq", "wsj"]
   },
   "tiingoconf":
