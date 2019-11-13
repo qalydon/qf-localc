@@ -59,13 +59,16 @@ class QConfiguration:
     qf_yahoo_conf = {
         "pacing": 0.200
     }
+    qf_cnbc_conf = {
+        "pacing": 0.200
+    }
     # Default data sources in priority order
     qf_data_sources = {
         "stock": ["stooq", "wsj", "tiingo", "yahoo"],
         "mutf": ["wsj", "stooq", "tiingo", "yahoo"],
         "etf": ["wsj", "stooq", "tiingo", "yahoo"],
         "index": ["stooq", "wsj", "yahoo"],
-        "dividend": ["yahoo"]
+        "dividend": ["yahoo", "cnbc"]
     }
 
 
@@ -118,6 +121,10 @@ class QConfiguration:
             # Yahoo configuration
             if "yahooconf" in cfj:
                 cls.qf_yahoo_conf = cfj["yahooconf"]
+
+            # CNBC configuration
+            if "cnbcconf" in cfj:
+                cls.qf_cnbc_conf = cfj["cnbcconf"]
 
             # New list of prioritized data sources
             if "datasources" in cfj:

@@ -60,7 +60,7 @@ def _get_ttm_dividend_record(ticker, for_date):
                 # Sum distributions
                 dividend = 0.0
                 for dist in r:
-                    dividend += dist["amount"]
+                    dividend += float(dist["amount"])
                 # Create ttm dividend dict as the result
                 res = {}
                 res["symbol"] = ticker

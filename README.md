@@ -96,7 +96,7 @@ The content of the configuration file is JSON and looks something like this (sho
     "mutf": ["wsj", "tiingo", "stooq", "yahoo"],
     "etf": ["tiingo", "wsj", "stooq", "yahoo"],
     "index": ["stooq", "wsj", "yahoo"],
-    "dividend": ["yahoo"]
+    "dividend": ["yahoo", "cnbc"]
   },
   "stooqconf": 
   {
@@ -145,6 +145,7 @@ ticker symbol: stock, mutf, etf, index. The following datasources are recognized
 | stooq      | stooq.com web site |
 | tiingo     | See [Tiingo API](https://www.tiingo.com/data/api). <br/>Requires a free basic account or better. |
 | yahoo      | Yahoo financial web site |
+| cnbc       | CNBC web site |
 
 A word about data sources. 
 
@@ -158,7 +159,7 @@ while the other sources typically only support stocks and ETFs (e.g. IEX and Sto
 
 In the future, other data sources may be added.
 
-#### Using Stooq
+#### Stooq
 If you want to use Stooq as your data source, you need to be aware of the ticker
 symbols that it recognizes. By observation, most ticker symbols need to have ".us"
 appended to the normal symbol. For example, the symbol "ibm" would be
@@ -189,7 +190,7 @@ in the configuration file.
 }
 ```
 
-#### Using Tiingo
+#### Tiingo
 If you want to use Tiingo as a data source, you need to create an account
 and get your API token. Go to [https://www.tiingo.com/](https://www.tiingo.com/)
 and click on the Sign-up button. After you get through the sign-up procedure
@@ -258,6 +259,41 @@ smaller pacing value, but anything below 0.100 is NOT recommended.
 }
 ```
 
+#### CNBC
+The CNBC data source currently supports the dividend category in a limited
+fashion (it can retrieve the TTM dividends for a date within the last month).
+However, TTM dividends are cached, so once the data has been retrieved
+it will be available (unless you delete the cache database). 
+
+Like the Yahoo data source, 
+it is implemented using web page "screen scraping".
+Screen scraping is subject to breakage if/when the web page changes.
+
+It is unclear how or if CNBC throttles requests. If you find that CNBC is
+throttling your requests, use the CNBC configuration section to specify a larger pacing value.
+The default setting is 0.200 seconds (200 ms). You might be able to run with a
+smaller pacing value, but anything below 0.100 is NOT recommended.
+
+```json
+{
+  "loglevel": "debug",
+  "cachedb": "~/libreoffice/qf/qf-cache-db.sqlite3",
+  "datasources":
+  {
+    "comment": "List data sources in priority order",
+    "stock": ["tiingo", "stooq", "wsj", "yahoo"],
+    "mutf": ["wsj", "tiingo", "stooq", "yahoo"],
+    "etf": ["tiingo", "wsj", "stooq", "yahoo"],
+    "index": ["stooq", "wsj", "yahoo"],
+    "dividend": ["cnbc"]
+  },
+  "cnbcconf":
+  {
+    "pacing": 0.200
+  }
+}
+```
+
 #### Forcing a Specific Data Source
 If for some reason you want to force a category to use a specific data source,
 remove all but the desired data source from the category list.
@@ -274,7 +310,8 @@ For example, this will limit stock category requests to Tiingo.
     "stock": ["tiingo"],
     "mutf": ["wsj", "tiingo", "stooq"],
     "etf": ["tiingo", "wsj", "stooq"],
-    "index": ["stooq", "wsj"]
+    "index": ["stooq", "wsj"],
+    "dividend": ["yahoo", "cnbc"]
   },
   "tiingoconf":
   {
@@ -307,6 +344,7 @@ The standard categories are:
 * mutf or mututalfund
 * etf
 * index
+* dividend
 
 Some examples:
 ```

@@ -1,2 +1,3 @@
 # Used only for testing
 cacert.pem
+*.json

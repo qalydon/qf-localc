@@ -19,6 +19,7 @@
 from qf_configuration import QConfiguration
 from qf_wsj import WSJDataSource
 # from qf_iex import IEXDataSource
+from qf_cnbc import CNBCDataSource
 from qf_stooq import StooqDataSource
 from qf_tiingo import TiingoDataSource
 from qf_yahoo import YahooDataSource
@@ -38,6 +39,7 @@ class DataSourceMgr:
     _sources = {
         "wsj": WSJDataSource(),
         # "iex": IEXDataSource(),
+        "cnbc": CNBCDataSource(),
         "stooq": StooqDataSource(),
         "tiingo": TiingoDataSource(),
         "yahoo": YahooDataSource()
