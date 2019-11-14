@@ -3,6 +3,7 @@ Copyright © 2018, 2019 by Dave Hocker as Qalydon
 
 ## Contents
 * [Overview](#overview)
+* [Before Installing](#before-installing)
 * [Installation](#installation)
 * [Configuration File](#configuration-file)
 * [Data sources](#data-sources)
@@ -55,9 +56,52 @@ GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007. Refer to the
 [LICENSE.md](https://github.com/qalydon/qf-localc/blob/master/README.md)
 file for complete details.
 
-## Download
-Download the latest **qf.oxt** (the add-in file) from
-[here](https://github.com/qalydon/qf-localc/releases).
+## Before Installing
+
+LibreOffice runs on multiple operating systems. For unknown reasons, the content of a LibreOffice install is
+different depending on the operating system. In particular, LibreOffice ships with an embedded version of
+Python 3 and the configuration of the embedded version varies significantly.
+
+### Windows
+
+The extension uses Sqlite3 to cache retrieved data. Unfortunately, the Windows version
+of LibreOffice does not come with Sqlite3. If you want to use the cache feature on Windows, you will
+need to install a version of Python 3 that matches the Python version that comes
+embedded in LibreOffice.
+
+For LibreOffice 6.2.8, [Python 3.5.4](https://www.python.org/ftp/python/3.5.4/python-3.5.4-amd64.exe)
+is required. 
+Be sure to note where you install it. For simplicity, you might consider
+installing to C:\python35. **Be sure to install the 
+x86_64 version (aka the 64-bit version).**
+
+After you install Python 3.5.4, go to the Control Panel and set up the
+PYTHONPATH variable. Open the menu and type **environment variables**.
+This should lead you to the System Properties dialog box. Click on the
+**Environment Variables** button.
+
+Create a new **user** variable named PYTHONPATH. Set the value to the following.
+```
+c:\python35;c:\python35\Lib;c:\python35\Lib\site-packages;c:\python35\Lib\sqlite3;c:\python35\DLLs
+```
+This assumes you installed Python 3.5.4 to C:\python35. If you installed to a
+different directory, adjust PYTHONPATH accordingly.
+
+**After completing the Python installation and setup, it is strongly recommended 
+that you reboot Windows.**
+
+### macOS
+
+Some of the web services used by the extension require secure connections through HTTPS.
+The urllib package in the embedded version of Python does not recognize or use the CA certificates
+installed under macOS. To compensate for this issue, the extension includes the cacert.pem file from the
+[certifi package](https://github.com/certifi/python-certifi).
+
+There are no prerequisites for macOS.
+
+### Ubuntu
+
+At this time there are no prerequisites for Ubuntu.
 
 ## Installation
 1. Download the latest **qf.oxt** (the add-in file) from
@@ -121,6 +165,7 @@ The content of the configuration file is JSON and looks something like this (sho
 | stooqconf | Specific configuration for the Stooq data source. See [below](#using-stooq). | 
 | tiingoconf | Specific configuration for the Tiingo data source. See [below](#using-tiingo). |
 | yahooconf | Specific configuration fot the Yahoo data source. See [below](#yahoo).
+| cnbcconf | Specific configuration fot the CNBC data source. See [below](#cnbc).
 
 The location of the configuration file depends on your operating system.
 
