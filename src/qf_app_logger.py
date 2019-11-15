@@ -40,6 +40,7 @@ class AppLogger:
 
             # Log to a file
             # Make logfile location OS specific
+            # TODO This doesn't work as expect in the Ubuntu version. Need to isolate home_path function.
             if os.name == "posix":
                 # Linux or OS X
                 file_path = "{0}/libreoffice/qf/".format(os.environ["HOME"])

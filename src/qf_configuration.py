@@ -37,6 +37,23 @@ except NameError:
     logger.debug("FileNotFoundError defined")
 
 
+# Static definition of the home path
+if os.name == "posix":
+    # Linux or OS X
+    if sys.platform == "darwin":
+        # macOS X
+        home_data_path = "{0}/libreoffice/qf/".format(os.environ["HOME"])
+    else:
+        # Linux
+        home_data_path = "/home/{0}/libreoffice/qf/".format(os.environ["USERNAME"])
+elif os.name == "nt":
+    # Windows
+    home_data_path = "{0}\\libreoffice\\qf\\".format(os.environ["LOCALAPPDATA"])
+else:
+    home_data_path = ""
+logger.info("The home data path is: %s", home_data_path)
+
+
 class QConfiguration:
     """
     Encapsulates QFinance configuration data
@@ -49,7 +66,7 @@ class QConfiguration:
     loglevel = "info"
     cwd = ""
     qf_conf_exists = False
-    qf_cache_db = "~/libreoffice/qf/qf-cache-db.sqlite3"
+    qf_cache_db = home_data_path + "qf-cache-db.sqlite3"
     qf_stooq_conf = {
         "tickerpostfix": ".us"
     }
@@ -81,7 +98,7 @@ class QConfiguration:
         :return: None
         """
         file_name = "qf.conf"
-        cls.file_path = QConfiguration.home_data_path()
+        cls.file_path = home_data_path
         cls.full_file_path = cls.file_path + file_name
 
         # Read qf.conf file
@@ -91,6 +108,7 @@ class QConfiguration:
             cls.qf_conf_exists = True
 
             cfj = json.loads(cf.read())
+            logger.info("Using configuration file: %s", cls.full_file_path)
 
             if "loglevel" in cfj:
                 cls.loglevel = cfj["loglevel"]
@@ -220,16 +238,6 @@ class QConfiguration:
         """
 
         return cls.qf_conf_exists
-
-    @staticmethod
-    def home_data_path():
-        if os.name == "posix":
-            # Linux or OS X
-            return "{0}/libreoffice/qf/".format(os.environ["HOME"])
-        elif os.name == "nt":
-            # Windows
-            return "{0}\\libreoffice\\qf\\".format(os.environ["LOCALAPPDATA"])
-        return ""
 
 # Set up configuration
 QConfiguration.load()
