@@ -18,12 +18,21 @@
 
 from qf_app_logger import AppLogger
 from qf_configuration import QConfiguration
-import sqlite3
 import os
 
 # Logger init
 the_app_logger = AppLogger("qf-extension")
 logger = the_app_logger.getAppLogger()
+
+# If Sqlite3 is not available, disable caching
+try:
+    import sqlite3
+    cache_enabled = True
+except Exception as ex:
+    cache_enabled = False
+    logger.error("sqlite3 unavailable; cache disabled")
+    logger.error(str(ex))
+    # TODO Create a dialog box for notifying user
 
 
 class CacheDB:
@@ -33,6 +42,9 @@ class CacheDB:
         Open a connection to the cache DB. Create the DB if it does not exist.
         :return: Database connection.
         """
+        if not cache_enabled:
+            return None
+
         # Determine cache location based on underlying OS
         full_file_path = QConfiguration.qf_cache_db
         file_path = os.path.dirname(full_file_path)
@@ -69,6 +81,8 @@ class CacheDB:
         :param tgtdate:
         :return: Returns the cached DB record. If no record is found, returns None.
         """
+        if not cache_enabled:
+            return None
         conn = cls.__open_yh_cache()
         rset = conn.execute("SELECT * from SymbolDate where Symbol=? and Date=?", [symbol, tgtdate])
         r = rset.fetchone()
@@ -86,6 +100,8 @@ class CacheDB:
         :param data_source: text
         :return:
         """
+        if not cache_enabled:
+            return None
         conn = cls.__open_yh_cache()
         # print ("Cache data:", symbol, tgtdate, close)
         conn.execute("INSERT INTO SymbolDate values (?,?,?,?,?,?,?,?,?)", [symbol, tgtdate, 0, 0, 0, close, 0, 0, data_source])
@@ -107,6 +123,8 @@ class CacheDB:
         :param data_source: text
         :return: None
         """
+        if not cache_enabled:
+            return None
         conn = cls.__open_yh_cache()
         # print ("Cache data:", symbol, tgtdate, close)
         conn.execute("INSERT INTO SymbolDate values (?,?,?,?,?,?,?,?,?)",
@@ -122,6 +140,8 @@ class CacheDB:
         :param tgtdate:
         :return: Returns the cached DB record. If no record is found, returns None.
         """
+        if not cache_enabled:
+            return None
         conn = cls.__open_yh_cache()
         rset = conn.execute("SELECT * from TTMDividends where Symbol=? and CalcDate=?", [symbol, tgtdate])
         r = rset.fetchone()
@@ -140,6 +160,8 @@ class CacheDB:
         :param close:
         :return:
         """
+        if not cache_enabled:
+            return None
         conn = cls.__open_yh_cache()
         conn.execute("INSERT INTO TTMdividends values (?,?,?,?)", [symbol, tgtdate, dividend, source])
         conn.commit()
