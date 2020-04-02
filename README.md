@@ -70,7 +70,7 @@ need to install a version of Python 3 that matches the Python version that comes
 embedded in LibreOffice.
 
 For LibreOffice 6.2.8, [Python 3.5.4](https://www.python.org/ftp/python/3.5.4/python-3.5.4-amd64.exe)
-is required. 
+is required (for LOCalc version 6.2.x any Python 3.5.x will probably work). 
 Be sure to note where you install it. For simplicity, you might consider
 installing to C:\python35. **Be sure to install the 
 x86_64 version (aka the 64-bit version).**
@@ -86,6 +86,19 @@ c:\python35;c:\python35\Lib;c:\python35\Lib\site-packages;c:\python35\Lib\sqlite
 ```
 This assumes you installed Python 3.5.4 to C:\python35. If you installed to a
 different directory, adjust PYTHONPATH accordingly.
+
+If you are in doubt about what version of Python you need, open a command prompt
+and navigate to the directory where LibreOffice is installed. If you installed the 64-bit
+version this will be:
+```
+C:\Program Files\LibreOffice\program
+```
+
+Type the following command:
+```
+python -V
+```
+The result will be the version of Python that is embedded with LibreOffice.
 
 **After completing the Python installation and setup, it is strongly recommended 
 that you reboot Windows.**

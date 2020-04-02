@@ -42,14 +42,18 @@ try:
     import xml.etree.ElementTree as etree
     from qf_configuration import QConfiguration
     from qf_extn_helper import qf_version, normalize_date
-    import qf_hist_quote
-    import qf_dividends
-    from qf_data_source_mgr import DataSourceMgr
+    # These imports were moved to the methods that use them as a form of late binding.
+    # On Windows 10 they cause an obscure error if Sqlite3 is not available.
+    # import qf_hist_quote
+    # import qf_dividends
+    # from qf_data_source_mgr import DataSourceMgr
 
     # Logger init
     the_app_logger = AppLogger("qf-extension")
     logger = the_app_logger.getAppLogger()
-    # Extract version from description.xml
+    # Log embedded Python version
+    logger.info("Using Python %s", sys.version)
+    # Extract extension version from description.xml
     _qf_version = qf_version()
     logger.info("QF-LOCalc Version: %s", _qf_version)
     # After logger
@@ -85,6 +89,7 @@ class QFImpl(unohelper.Base, XQFinance):
         return str(QConfiguration.qf_data_sources["stock"])
 
     def QFClosingPrice(self, symbol, category, fordate):
+        import qf_hist_quote
         valid = self.__validate_parms(symbol, category, fordate)
         if (valid[0]):
             logger.debug("QFClosingPrice called %s %s %s", symbol, category, fordate)
@@ -92,6 +97,7 @@ class QFImpl(unohelper.Base, XQFinance):
         return valid[1]
 
     def QFOpeningPrice(self, symbol, category, fordate):
+        import qf_hist_quote
         logger.debug("QFOpeningPrice called %s %s %s", symbol, category, fordate)
         valid = self.__validate_parms(symbol, category, fordate)
         if (valid[0]):
@@ -99,6 +105,7 @@ class QFImpl(unohelper.Base, XQFinance):
         return valid[1]
 
     def QFHighPrice(self, symbol, category, fordate):
+        import qf_hist_quote
         logger.debug("QFHighPrice called %s %s %s", symbol, category, fordate)
         valid = self.__validate_parms(symbol, category, fordate)
         if (valid[0]):
@@ -106,6 +113,7 @@ class QFImpl(unohelper.Base, XQFinance):
         return valid[1]
 
     def QFLowPrice(self, symbol, category, fordate):
+        import qf_hist_quote
         logger.debug("QFLowPrice called %s %s %s", symbol, category, fordate)
         valid = self.__validate_parms(symbol, category, fordate)
         if (valid[0]):
@@ -113,6 +121,7 @@ class QFImpl(unohelper.Base, XQFinance):
         return valid[1]
 
     def QFDayVolume(self, symbol, category, fordate):
+        import qf_hist_quote
         logger.debug("QFDayVolume called %s %s %s", symbol, category, fordate)
         valid = self.__validate_parms(symbol, category, fordate)
         if (valid[0]):
@@ -120,6 +129,7 @@ class QFImpl(unohelper.Base, XQFinance):
         return valid[1]
 
     def QFTTMDividend(self, symbol, fordate):
+        import qf_dividends
         logger.debug("QFTTMDividend called %s %s", symbol, fordate)
         valid = self.__validate_parms(symbol, "", fordate)
         if (valid[0]):

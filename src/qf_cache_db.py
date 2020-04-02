@@ -25,6 +25,7 @@ the_app_logger = AppLogger("qf-extension")
 logger = the_app_logger.getAppLogger()
 
 # If Sqlite3 is not available, disable caching
+show_dialog = True
 try:
     import sqlite3
     cache_enabled = True
@@ -32,7 +33,23 @@ except Exception as ex:
     cache_enabled = False
     logger.error("sqlite3 unavailable; cache disabled")
     logger.error(str(ex))
-    # TODO Create a dialog box for notifying user
+
+    # Show the dialog box only once
+    if show_dialog:
+        try:
+            show_dialog = False
+            # Create a dialog box for notifying user
+            from qf_dialog_box import QFDialogBox
+            import sys
+
+            dlg = QFDialogBox()
+            python_version = "{0}.{1}.{2}".format(sys.version_info.major, sys.version_info.minor, sys.version_info.micro)
+            msg = "Sqlite3 is not available. Caching has been disabled. Install Python {0} to enable Sqlite3 caching. ".format(python_version) + \
+                "See: https://github.com/qalydon/qf-localc/blob/master/README.md"
+            dlg.show("QFinance Extension", msg)
+        except Exception as exx:
+            logger.error("Unable to show dialog box")
+            logger.error(str(ex))
 
 
 class CacheDB:

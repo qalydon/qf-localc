@@ -128,6 +128,7 @@ shutil.copy("src/qf_configuration.py", "build/")
 shutil.copy("src/qf_extn_helper.py", "build/")
 shutil.copy("src/qf_url_helpers.py", "build/")
 shutil.copy("src/qf_cache_db.py", "build/")
+shutil.copy("src/qf_dialog_box.py", "build/")
 shutil.copy("certifi/cacert.pem", "build/")
 
 # Generate the XCU file
