@@ -59,9 +59,20 @@ try:
     # After logger
 except Exception as ex:
     # Emergency debugging to cover for the fact that LibreOffice is terrible at debugging...
-    # from qf_configuration import QConfiguration
-    # fh = open(QConfiguration.home_data_path() + "error_report.txt", "a")
-    fh = open("/Users/dhocker/libreoffice/error_report.txt", "a")
+    # The first choice of location for the emergency log is the environment setting
+    if "QF_LOCALC_LOG_DIR" in os.environ.keys():
+        home_path = os.environ["QF_LOCALC_LOG_DIR"]
+    elif os.name == "posix":
+        home_path = os.environ["HOME"] + "/libreoffice"
+    elif os.name == "nt":
+        home_path = os.environ["HOMEPATH"] + "/libreoffice"
+    else:
+        home_path = ""
+    # Make sure the emergency log directory exists
+    if not os.path.exists(home_path):
+        os.makedirs(home_path)
+    emergency_log = "{0}/error_report.txt".format(home_path)
+    fh = open(emergency_log, "a")
     # fh.write(ex)
     fh.write(str(ex))
     fh.close()
