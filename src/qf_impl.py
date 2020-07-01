@@ -57,13 +57,25 @@ try:
     _qf_version = qf_version()
     logger.info("QF-LOCalc Version: %s", _qf_version)
     # After logger
+    logger.debug("Dumping evnironment")
+    for key in os.environ.keys():
+        logger.debug("[%s]=%s", key, os.environ[key])
 except Exception as ex:
     # Emergency debugging to cover for the fact that LibreOffice is terrible at debugging...
     # The first choice of location for the emergency log is the environment setting
     if "QF_LOCALC_LOG_DIR" in os.environ.keys():
         home_path = os.environ["QF_LOCALC_LOG_DIR"]
     elif os.name == "posix":
-        home_path = os.environ["HOME"] + "/libreoffice"
+        key = None
+        if "USER" in os.environ.keys():
+            key = "USER"
+        elif "USERNAME" in os.environ.keys():
+            key = "USERNAME"
+        if key is not None:
+            home_path = "/home/{0}/libreoffice/qf/".format(os.environ[key])
+        else:
+            # Under Snap, this will be hard to find
+            home_path = "{0}/libreoffice/qf/".format(os.environ["HOME"])
     elif os.name == "nt":
         home_path = os.environ["HOMEPATH"] + "/libreoffice"
     else:
@@ -73,8 +85,8 @@ except Exception as ex:
         os.makedirs(home_path)
     emergency_log = "{0}/error_report.txt".format(home_path)
     fh = open(emergency_log, "a")
-    # fh.write(ex)
     fh.write(str(ex))
+    fh.write("\n")
     fh.close()
     exit(666)
 

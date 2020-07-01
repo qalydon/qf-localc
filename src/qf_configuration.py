@@ -40,12 +40,17 @@ except NameError:
 # Static definition of the home path
 if os.name == "posix":
     # Linux or OS X
-    if sys.platform == "darwin":
-        # macOS X
-        home_data_path = "{0}/libreoffice/qf/".format(os.environ["HOME"])
+    # We are trying to force the directory to a well known location
+    key = None
+    if "USER" in os.environ.keys():
+        key = "USER"
+    elif "USERNAME" in os.environ.keys():
+        key = "USERNAME"
+    if key is not None:
+        home_data_path = "/home/{0}/libreoffice/qf/".format(os.environ[key])
     else:
-        # Linux
-        home_data_path = "/home/{0}/libreoffice/qf/".format(os.environ["USERNAME"])
+        # Under Snap, this will be hard to find
+        home_data_path = "{0}/libreoffice/qf/".format(os.environ["HOME"])
 elif os.name == "nt":
     # Windows
     home_data_path = "{0}\\libreoffice\\qf\\".format(os.environ["LOCALAPPDATA"])
