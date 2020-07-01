@@ -1,7 +1,7 @@
 # coding: utf-8
 #
 # Python logging
-# Copyright © 2018 Dave Hocker as Qalydon (qalydon17@gmail.com)
+# Copyright © 2018, 2020 Dave Hocker as Qalydon (qalydon17@gmail.com)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,6 +13,7 @@
 import logging
 import logging.handlers
 import os
+from qf_home import find_home
 
 
 class AppLogger:
@@ -40,19 +41,7 @@ class AppLogger:
 
             # Log to a file
             # Make logfile location OS specific
-            # This doesn't work as expected in the Ubuntu version. Need to isolate home_path function.
-            file_path = ""
-            if os.name == "posix":
-                # Linux or OS X
-                if "USER" in os.environ.keys():
-                    file_path = "/home/{0}/libreoffice/qf/".format(os.environ["USER"])
-                elif "USERNAME" in os.environ.keys():
-                    file_path = "/home/{0}/libreoffice/qf/".format(os.environ["USERNAME"])
-                elif "HOME" in os.environ.keys():
-                    file_path = "{0}/libreoffice/qf/".format(os.environ["HOME"])
-            elif os.name == "nt":
-                # Windows
-                file_path = "{0}\\libreoffice\\qf\\".format(os.environ["LOCALAPPDATA"])
+            file_path = find_home()
             logfile = file_path + logname + ".log"
 
             # Create directory if it doesn't exist

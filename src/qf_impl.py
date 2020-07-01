@@ -1,7 +1,7 @@
 # coding: utf-8
 #
 # QFinance extension main interface to LO Calc
-# Copyright © 2018  Dave Hocker (email: qalydon17@gmail.com)
+# Copyright © 2018, 2020  Dave Hocker (email: qalydon17@gmail.com)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -63,26 +63,13 @@ try:
 except Exception as ex:
     # Emergency debugging to cover for the fact that LibreOffice is terrible at debugging...
     # The first choice of location for the emergency log is the environment setting
-    if "QF_LOCALC_LOG_DIR" in os.environ.keys():
-        home_path = os.environ["QF_LOCALC_LOG_DIR"]
-    elif os.name == "posix":
-        key = None
-        if "USER" in os.environ.keys():
-            key = "USER"
-        elif "USERNAME" in os.environ.keys():
-            key = "USERNAME"
-        if key is not None:
-            home_path = "/home/{0}/libreoffice/qf/".format(os.environ[key])
-        else:
-            # Under Snap, this will be hard to find
-            home_path = "{0}/libreoffice/qf/".format(os.environ["HOME"])
-    elif os.name == "nt":
-        home_path = os.environ["HOMEPATH"] + "/libreoffice"
-    else:
-        home_path = ""
+    from qf_home import find_emergency_home
+    home_path = find_emergency_home()
+
     # Make sure the emergency log directory exists
     if not os.path.exists(home_path):
         os.makedirs(home_path)
+
     emergency_log = "{0}/error_report.txt".format(home_path)
     fh = open(emergency_log, "a")
     fh.write(str(ex))

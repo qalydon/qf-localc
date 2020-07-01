@@ -1,7 +1,7 @@
 # coding: utf-8
 #
 # qf_configuration - Extension configruation manager
-# Copyright (C) 2018  Dave Hocker (email: Qalydon17@gmail.com)
+# Copyright (C) 2018, 2020  Dave Hocker (email: Qalydon17@gmail.com)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ import datetime
 import json
 from qf_app_logger import AppLogger
 from qf_url_helpers import setup_cacerts
+from qf_home import find_home
 
 # Logger init
 the_app_logger = AppLogger("qf-extension")
@@ -38,25 +39,8 @@ except NameError:
 
 
 # Static definition of the home path
-if os.name == "posix":
-    # Linux or OS X
-    # We are trying to force the directory to a well known location
-    key = None
-    if "USER" in os.environ.keys():
-        key = "USER"
-    elif "USERNAME" in os.environ.keys():
-        key = "USERNAME"
-    if key is not None:
-        home_data_path = "/home/{0}/libreoffice/qf/".format(os.environ[key])
-    else:
-        # Under Snap, this will be hard to find
-        home_data_path = "{0}/libreoffice/qf/".format(os.environ["HOME"])
-elif os.name == "nt":
-    # Windows
-    home_data_path = "{0}\\libreoffice\\qf\\".format(os.environ["LOCALAPPDATA"])
-else:
-    home_data_path = ""
-logger.info("The home data path is: %s", home_data_path)
+# We are trying to force the directory to a well known location
+home_data_path = find_home(logger=logger)
 
 
 class QConfiguration:

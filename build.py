@@ -1,7 +1,7 @@
 #! /usr/local/bin/python3
 #
 # Package extension files into an .oxt file
-# Copyright (C) 2017  Dave Hocker (email: qalydon17@gmail.com)
+# Copyright © 2017, 2020  Dave Hocker (email: qalydon17@gmail.com)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -129,6 +129,7 @@ shutil.copy("src/qf_extn_helper.py", "build/")
 shutil.copy("src/qf_url_helpers.py", "build/")
 shutil.copy("src/qf_cache_db.py", "build/")
 shutil.copy("src/qf_dialog_box.py", "build/")
+shutil.copy("src/qf_home.py", "build/")
 shutil.copy("certifi/cacert.pem", "build/")
 
 # Generate the XCU file
