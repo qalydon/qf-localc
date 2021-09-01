@@ -288,6 +288,10 @@ When using Tiingo, it is vitally important that you should set the permissions
 of the configuration file as described [above](#configuration-file-permissions).
 
 #### Yahoo
+**NOTICE: As of 2021-09-01 it appears that Yahoo no longer works (at least for dividends).
+Research into this issue will be done to determine if there is a new way to use
+Yahoo.**
+
 The Yahoo data source seems to support all ticker symbol categories. However, 
 it is implemented using a technique that is known as web page "screen scraping".
 Screen scraping is subject to breakage if/when the web page changes.
@@ -318,6 +322,10 @@ smaller pacing value, but anything below 0.100 is NOT recommended.
 ```
 
 #### CNBC
+**NOTICE: As of 2021-09-01 it appears that CNBC no longer work for dividends.
+Research into this issue will be done to determine if there is a new way to use
+CNBC.**
+
 The CNBC data source currently supports the dividend category in a limited
 fashion (it can retrieve the TTM dividends for a date within the last month).
 However, TTM dividends are cached, so once the data has been retrieved
