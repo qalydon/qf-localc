@@ -55,7 +55,7 @@ class QConfiguration:
     loglevel = "info"
     cwd = ""
     qf_conf_exists = False
-    qf_cache_db = home_data_path + "qf-cache-db.sqlite3"
+    qf_cache_db = home_data_path
     qf_stooq_conf = {
         "tickerpostfix": ".us"
     }
@@ -107,14 +107,15 @@ class QConfiguration:
                 cls.qf_cache_db = cfj["cachedb"]
             else:
                 # Default cache DB definition
-                file_name = "qf-cache-db.sqlite3"
                 if os.name == "posix":
                     # Linux or OS X
                     file_path = "{0}/libreoffice/qf/".format(os.environ["HOME"])
                 elif os.name == "nt":
                     # windows
                     file_path = "{0}\\libreoffice\\qf\\".format(os.environ["LOCALAPPDATA"])
-                cls.qf_cache_db = file_path + file_name
+                else:
+                    file_path = ""
+                cls.qf_cache_db = file_path
             logger.info("Using cache db %s", cls.qf_cache_db)
 
             # Stooq configuration

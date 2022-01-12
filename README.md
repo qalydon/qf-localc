@@ -3,12 +3,13 @@ Copyright © 2018, 2019 by Dave Hocker as Qalydon
 
 ## Contents
 * [Overview](#overview)
-* [Before Installing](#before-installing)
+* [History](#history)
 * [Installation](#installation)
 * [Configuration File](#configuration-file)
 * [Data sources](#data-sources)
 * [Using LoCalc Functions](#using-localc-functions)
 * [LoCalc Functions](#extension-localc-functions)
+* [Conversion](#conversion)
 * [References](#references)
 
 ## Overview
@@ -49,66 +50,36 @@ a list is tried until data is returned or the list is exhausted.
 ### LibreOffice Compatibility
 The LOCalc addin works on the Windows, macOS and Ubuntu versions of
 [LibreOffice (version >= 5.0)](https://www.libreoffice.org/).
-Testing is performed on the latest general distribution release.
+Testing is performed on the latest general distribution release (currently version 7.1).
 
 ### License
 GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007. Refer to the
 [LICENSE.md](https://github.com/qalydon/qf-localc/blob/master/README.md)
 file for complete details.
 
-## Before Installing
+## History
 
-LibreOffice runs on multiple operating systems. For unknown reasons, the content of a LibreOffice install is
-different depending on the operating system. In particular, LibreOffice ships with an embedded version of
-Python 3 and the configuration of the embedded version varies significantly.
+The original version of the extension used an Sqlite3 database to cache data.
+Unfortunately, not every distribution of LibreOffice contained Sqlite3. Eventually,
+it became too difficult to work around this issue. Finally LibreOffice dropped
+Sqlite3 completely. With version 2 of the extension, 
+the use of Sqlite3 for caching data was replaced with CSV files.
+CSV file support is currently available on the Windows, macOS and Linux versions
+of LibreOffice.
+
+If you want to convert your  Sqlite3 database to CSV files, see the [Conversion](#conversion) section
+below.
 
 ### Windows
 
-The extension uses Sqlite3 to cache retrieved data. Unfortunately, the Windows version
-of LibreOffice does not come with Sqlite3. If you want to use the cache feature on Windows, you will
-need to install a version of Python 3 that matches the Python version that comes
-embedded in LibreOffice.
-
-For LibreOffice 6.2.8, [Python 3.5.4](https://www.python.org/ftp/python/3.5.4/python-3.5.4-amd64.exe)
-is required (for LOCalc version 6.2.x any Python 3.5.x will probably work). 
-Be sure to note where you install it. For simplicity, you might consider
-installing to C:\python35. **Be sure to install the 
-x86_64 version (aka the 64-bit version).**
-
-After you install Python 3.5.4, go to the Control Panel and set up the
-PYTHONPATH variable. Open the menu and type **environment variables**.
-This should lead you to the System Properties dialog box. Click on the
-**Environment Variables** button.
-
-Create a new **user** variable named PYTHONPATH. Set the value to the following.
-```
-c:\python35;c:\python35\Lib;c:\python35\Lib\site-packages;c:\python35\Lib\sqlite3;c:\python35\DLLs
-```
-This assumes you installed Python 3.5.4 to C:\python35. If you installed to a
-different directory, adjust PYTHONPATH accordingly.
-
-If you are in doubt about what version of Python you need, open a command prompt
-and navigate to the directory where LibreOffice is installed. If you installed the 64-bit
-version this will be:
-```
-C:\Program Files\LibreOffice\program
-```
-
-Type the following command:
-```
-python -V
-```
-The result will be the version of Python that is embedded with LibreOffice.
-
-**After completing the Python installation and setup, it is strongly recommended 
-that you reboot Windows.**
+There are no special steps needed to get the extension working on Windows.
 
 ### macOS
 
 Some of the web services used by the extension require secure connections through HTTPS.
 The urllib package in the embedded version of Python does not recognize or use the CA certificates
-installed under macOS. To compensate for this issue, the extension includes the cacert.pem file from the
-[certifi package](https://github.com/certifi/python-certifi).
+installed under macOS. To compensate for this issue, the extension includes the 
+cacert.pem file from the [certifi package](https://github.com/certifi/python-certifi).
 
 There are no prerequisites for macOS.
 
@@ -119,18 +90,21 @@ At this time there are no prerequisites for Ubuntu.
 ## Installation
 1. Download the latest **qf.oxt** (the add-in file) from
 [here](https://github.com/qalydon/qf-localc/releases).
-1. Start LibreOffice or LibreOffice Calc.
-1. From the Tools menu, open the Extension Manager.
-1. Look through the list of installed add-ins for QFinance.
+2. Start LibreOffice or LibreOffice Calc.
+3. From the Tools menu, open the Extension Manager.
+4. Look through the list of installed add-ins for Qalydon Financial Extension.
 If you find it, click the Remove button to remove it.
-For best results, **remove an existing QFinance
+For best results, **always remove an existing Qalydon Financial
 add-in first**.
-1. Click the Add button.
-1. Navigate to the location where you downloaded **qf.oxt**.
+5. Close the Extension Manager.
+6. Restart LibreOffice.
+7. Return to the Extension Manager.
+8. Click the Add button.
+9. Navigate to the location where you downloaded **qf.oxt**.
 Select it.
-1. Choose if you want the add-in installed for you or everyone.
-1. Click the Close button.
-1. If LibreOffice asks to restart, do so.
+10. Choose if you want the add-in installed for you or everyone.
+11. Click the Close button.
+12. If LibreOffice asks to restart, do so.
 
 **It is recommended that you always remove an existing version of the
 add-in before installing an update. Othwerwise, your results may be
@@ -141,11 +115,12 @@ The extension can be customized using its configuration file. You do not have to
 create a configuration file. The extension will create a default configuration file
 the first time it is used within LibreOffice.
 
-The content of the configuration file is JSON and looks something like this (showing defaults).
+The content of the configuration file is JSON and looks something like this 
+(showing defaults).
 ```json
 {
   "loglevel": "debug",
-  "cachedb": "~/libreoffice/qf/qf-cache-db.sqlite3",
+  "cachedb": "~/libreoffice/qf/",
   "datasources":
   {
     "comment": "List of data sources in priority order",
@@ -173,7 +148,7 @@ The content of the configuration file is JSON and looks something like this (sho
 | Key | Value |
 |:-----|:-------|
 | loglevel | error, warning, info, debug (default) |
-| cachedb | Historical data is persistently cached in a SQLite database. This tells the extension what database to create and use.
+| cachedb | Historical data is persistently cached in CSV files. This tells the extension where to keep the cache files.
 | datasources | The extension can use several sources for each ticker symbol category data. See the [list](#data-sources) below.
 | stooqconf | Specific configuration for the Stooq data source. See [below](#using-stooq). | 
 | tiingoconf | Specific configuration for the Tiingo data source. See [below](#using-tiingo). |
@@ -191,7 +166,7 @@ The location of the configuration file depends on your operating system.
 ### Configuration File Permissions
 Finally, it is recommended that you set the permissions on the configuration file
 so that only your user account has any access to the file. Your account should
-have read/write access by all other accounts should have NO access.
+have read/write access but all other accounts should have NO access.
 
 ### Data Sources
 The configuration file specifies a list of data sources for each category of
@@ -231,7 +206,7 @@ in the configuration file.
 ```json
 {
   "loglevel": "debug",
-  "cachedb": "~/libreoffice/qf/qf-cache-db.sqlite3",
+  "cachedb": "~/libreoffice/qf/",
   "datasources":
   {
     "comment": "List data sources in priority order",
@@ -261,7 +236,7 @@ Be sure to note the [limitations](https://api.tiingo.com/about/pricing) of a fre
 ```json
 {
   "loglevel": "debug",
-  "cachedb": "~/libreoffice/qf/qf-cache-db.sqlite3",
+  "cachedb": "~/libreoffice/qf/",
   "datasources":
   {
     "comment": "List data sources in priority order",
@@ -304,7 +279,7 @@ smaller pacing value, but anything below 0.100 is NOT recommended.
 ```json
 {
   "loglevel": "debug",
-  "cachedb": "~/libreoffice/qf/qf-cache-db.sqlite3",
+  "cachedb": "~/libreoffice/qf/",
   "datasources":
   {
     "comment": "List data sources in priority order",
@@ -343,7 +318,7 @@ smaller pacing value, but anything below 0.100 is NOT recommended.
 ```json
 {
   "loglevel": "debug",
-  "cachedb": "~/libreoffice/qf/qf-cache-db.sqlite3",
+  "cachedb": "~/libreoffice/qf/",
   "datasources":
   {
     "comment": "List data sources in priority order",
@@ -369,7 +344,7 @@ For example, this will limit stock category requests to Tiingo.
 ```json
 {
   "loglevel": "debug",
-  "cachedb": "~/libreoffice/qf/qf-cache-db.sqlite3",
+  "cachedb": "~/libreoffice/qf/",
   "datasources":
   {
     "comment": "List data sources in priority order",
@@ -535,6 +510,16 @@ Returns the current data source. See [above](#data-sources) for a list
 of supported data sources.
 ```
 =QFDataSource()
+```
+
+## Conversion
+If you have an existing Sqlite3 database you can convert it to CSV files using the 
+conversion script. Download the conversion script (dump_db.py) from
+[here](https://github.com/qalydon/qf-localc/releases). Open a terminal to
+the directory where you downloaded the script and run the following command.
+
+```shell
+python3 dump_db.py
 ```
 
 ## References

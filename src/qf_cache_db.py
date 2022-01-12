@@ -1,7 +1,7 @@
 # coding: utf-8
 #
-# cache_db - Implements the persistent cache as a database
-# Copyright (C) 2018  Dave Hocker (email: Qalydon17@gmail.com)
+# cache_db - Implements the persistent cache
+# Copyright © 2018, 2022  Dave Hocker (email: Qalydon17@gmail.com)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,51 +18,32 @@
 
 from qf_app_logger import AppLogger
 from qf_configuration import QConfiguration
+from qf_csv_cache_file import QFCSVCacheFile
 import os
 
 # Logger init
 the_app_logger = AppLogger("qf-extension")
 logger = the_app_logger.getAppLogger()
 
-# If Sqlite3 is not available, disable caching
-show_dialog = True
-try:
-    import sqlite3
-    cache_enabled = True
-except Exception as ex:
-    cache_enabled = False
-    logger.error("sqlite3 unavailable; cache disabled")
-    logger.error(str(ex))
-
-    # Show the dialog box only once
-    if show_dialog:
-        try:
-            show_dialog = False
-            # Create a dialog box for notifying user
-            from qf_dialog_box import QFDialogBox
-            import sys
-
-            dlg = QFDialogBox()
-            python_version = "{0}.{1}.{2}".format(sys.version_info.major, sys.version_info.minor, sys.version_info.micro)
-            msg = "Sqlite3 is not available. Caching has been disabled. Install Python {0} to enable Sqlite3 caching. ".format(python_version) + \
-                "See: https://github.com/qalydon/qf-localc/blob/master/README.md"
-            dlg.show("QFinance Extension", msg)
-        except Exception as exx:
-            logger.error("Unable to show dialog box")
-            logger.error(str(ex))
-
 
 class CacheDB:
-    @classmethod
-    def __open_yh_cache(cls):
-        """
-        Open a connection to the cache DB. Create the DB if it does not exist.
-        :return: Database connection.
-        """
-        if not cache_enabled:
-            return None
+    """
+    Implements a data caching scheme using CSV files. Originally, the caching
+    scheme was based on Sqlite3, but LibreOffice dropped Sqlite3 from its embedded
+    Python package. As a result, caching is now performed using CSV files.
+    """
 
+    # Singleton instances of CSV cache files
+    price_cache = None
+    dividend_cache = None
+
+    PRICE_CACHE_KEYS = ['Open', 'High', 'Low', 'Close', 'Volume', 'Adj_Close']
+    DIVIDEND_CACHE_KEYS = ['Amount']
+
+    @classmethod
+    def _open_price_cache(cls):
         # Determine cache location based on underlying OS
+        # TODO Replace/remove DB from configuration
         full_file_path = QConfiguration.qf_cache_db
         file_path = os.path.dirname(full_file_path)
 
@@ -70,25 +51,46 @@ class CacheDB:
         if not os.path.exists(file_path):
             logger.info("Create directory")
             os.makedirs(file_path)
+        full_file_path = os.path.join(file_path, "symbol_date.csv")
 
-        # If DB does not exist, create it
-        # TODO Move this out to its own function. Consider putting
-        # initialization SQL in a text file.
-        if not os.path.exists(full_file_path):
-            logger.info("Create database")
-            conn = sqlite3.connect(full_file_path)
-            conn.execute("CREATE TABLE SymbolDate (Symbol text not null, Date text not null, Open real, High real, Low real, Close real, Volume integer, Adj_Close real, Source text, PRIMARY KEY(Symbol,Date))")
-            conn.execute("CREATE TABLE TTMDividends (Symbol TEXT NOT NULL, CalcDate TEXT NOT NULL, Amount REAL NOT NULL, Source TEXT, PRIMARY KEY(Symbol,CalcDate))")
-        else:
-            conn = sqlite3.connect(full_file_path)
+        if cls.price_cache is None:
+            logger.debug("Opening price cache file %s", full_file_path)
+            cls.price_cache = QFCSVCacheFile(full_file_path,
+                                         symbol="Symbol", value_date="Date",
+                                         value_keys=cls.PRICE_CACHE_KEYS)
+            # Create the CSV file if it does not exist
+            if not os.path.exists(full_file_path):
+                cls.price_cache.create_csv()
+                logger.debug("Created %s", full_file_path)
+            cls.price_cache.load_csv()
 
-        # We use the row factory to get named row columns. Makes handling row sets easier.
-        conn.row_factory = sqlite3.Row
-        # The default string type is unicode. This changes it to UTF-8.
-        conn.text_factory = str
+        return cls.price_cache
 
-        # return connection to the cache DB
-        return conn
+    @classmethod
+    def _open_dividend_cache(cls):
+        # Determine cache location based on underlying OS
+        # TODO Replace/remove DB from configuration
+        full_file_path = QConfiguration.qf_cache_db
+        file_path = os.path.dirname(full_file_path)
+
+        # Make the folder if it does not exist
+        if not os.path.exists(file_path):
+            logger.info("Create directory")
+            os.makedirs(file_path)
+        full_file_path = os.path.join(file_path, "ttmdividends.csv")
+
+        if cls.dividend_cache is None:
+            logger.debug("Opening dividend cache file %s", full_file_path)
+            cls.dividend_cache = QFCSVCacheFile(full_file_path,
+                                         symbol="Symbol", value_date="CalcDate",
+                                         value_keys=cls.DIVIDEND_CACHE_KEYS)
+            # If the CSV file does not exist, create it
+            if not os.path.exists(full_file_path):
+                cls.dividend_cache.create_csv()
+                logger.debug("Created %s", full_file_path)
+            cls.dividend_cache.load_csv()
+
+        return cls.dividend_cache
 
     @classmethod
     def lookup_closing_price_by_date(cls, symbol, tgtdate):
@@ -98,12 +100,8 @@ class CacheDB:
         :param tgtdate:
         :return: Returns the cached DB record. If no record is found, returns None.
         """
-        if not cache_enabled:
-            return None
-        conn = cls.__open_yh_cache()
-        rset = conn.execute("SELECT * from SymbolDate where Symbol=? and Date=?", [symbol, tgtdate])
-        r = rset.fetchone()
-        conn.close()
+        cache_file = cls._open_price_cache()
+        r = cache_file.get_cache_record(symbol, tgtdate)
         # r will be None if no record was found
         return r
 
@@ -117,13 +115,12 @@ class CacheDB:
         :param data_source: text
         :return:
         """
-        if not cache_enabled:
-            return None
-        conn = cls.__open_yh_cache()
-        # print ("Cache data:", symbol, tgtdate, close)
-        conn.execute("INSERT INTO SymbolDate values (?,?,?,?,?,?,?,?,?)", [symbol, tgtdate, 0, 0, 0, close, 0, 0, data_source])
-        conn.commit()
-        conn.close()
+        cache_file = cls._open_price_cache()
+        values = {}
+        for k in cls.PRICE_CACHE_KEYS:
+            values[k] = 0
+        values["Close"] = close
+        cache_file.add_cache_record(symbol, tgtdate, values)
 
     @classmethod
     def insert_ohlc_price(cls, symbol, tgtdate, open_price, high_price, low_price, closing_price, volume, adj_closing_price, data_source):
@@ -140,14 +137,16 @@ class CacheDB:
         :param data_source: text
         :return: None
         """
-        if not cache_enabled:
-            return None
-        conn = cls.__open_yh_cache()
-        # print ("Cache data:", symbol, tgtdate, close)
-        conn.execute("INSERT INTO SymbolDate values (?,?,?,?,?,?,?,?,?)",
-                     [symbol, tgtdate, open_price, high_price, low_price, closing_price, volume, adj_closing_price, data_source])
-        conn.commit()
-        conn.close()
+        cache_file = cls._open_price_cache()
+        values = {
+            "Open": open_price,
+            "High": high_price,
+            "Low": low_price,
+            "Close": closing_price,
+            "Volume": volume,
+            "Adj_Close": adj_closing_price
+        }
+        cache_file.add_cache_record(symbol, tgtdate, values)
 
     @classmethod
     def lookup_ttm_dividend_by_date(cls, symbol, tgtdate):
@@ -157,13 +156,8 @@ class CacheDB:
         :param tgtdate:
         :return: Returns the cached DB record. If no record is found, returns None.
         """
-        if not cache_enabled:
-            return None
-        conn = cls.__open_yh_cache()
-        rset = conn.execute("SELECT * from TTMDividends where Symbol=? and CalcDate=?", [symbol, tgtdate])
-        r = rset.fetchone()
-        conn.close()
-        # r will be None if no record was found
+        cache_file = cls._open_dividend_cache()
+        r = cache_file.get_cache_record(symbol, tgtdate)
         return r
 
     @classmethod
@@ -177,9 +171,6 @@ class CacheDB:
         :param close:
         :return:
         """
-        if not cache_enabled:
-            return None
-        conn = cls.__open_yh_cache()
-        conn.execute("INSERT INTO TTMdividends values (?,?,?,?)", [symbol, tgtdate, dividend, source])
-        conn.commit()
-        conn.close()
+        cache_file = cls._open_dividend_cache()
+        values = {"Amount": dividend}
+        cache_file.add_cache_record(symbol, tgtdate, values)
