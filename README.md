@@ -1,5 +1,5 @@
 # Qalydon Finance LibreOffice Calc Extension
-Copyright © 2018, 2019 by Dave Hocker as Qalydon
+Copyright © 2018, 2022 by Dave Hocker as Qalydon
 
 ## Contents
 * [Overview](#overview)
