@@ -55,6 +55,10 @@ elif sys.platform == 'win32':
     # Windows
     # Nothing special required. Be sure to run lo_sdk.bat first.
     pass
+elif sys.platform == 'linux':
+    # Linux
+    # Nothing special required. Be sure to run setsdkenv_unix from libreoffice-dev
+    pass
 else:
     # TODO figure out how to build on other OSes
     print ("Platform {0} is not supported by this build script".format(sys.platform))
