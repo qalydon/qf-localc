@@ -1,7 +1,7 @@
 #! /usr/local/bin/python3
 #
 # Package extension files into an .oxt file
-# Copyright © 2017, 2022  Dave Hocker (email: qalydon17@gmail.com)
+# Copyright © 2017, 2026  Dave Hocker (email: qalydon17@gmail.com)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -105,10 +105,28 @@ if not os.path.exists("build/META-INF"):
     print ("Creating build/META-INF folder")
     os.mkdir("build/META-INF")
 
-# Compile idl
-subprocess.run(["idlc", "-w", "idl/xqf.idl"], stdout=sys.stdout, stderr=sys.stderr)
-subprocess.run(["regmerge", "-v", "build/xqf.rdb", "UCR", "idl/xqf.urd"])
-os.remove("idl/xqf.urd")
+# Download the current version of XInterface.idl
+# It may not be necessary to download this file on every build.
+# But, it is the safe way...
+print ("Downloading current version of XInterface.idl from the LibreOffice github repo")
+subprocess.run(
+    [
+        "./download-xinterface-idl.sh"
+    ],
+    stdout=sys.stdout,
+    stderr=sys.stderr,
+    shell=True
+)
+
+# Use unoidl-write instead of idlc and regmerge
+print ("Building xqf.rdb file")
+subprocess.run(["unoidl-write",
+               "/Applications/LibreOffice.app/Contents/Resources/types/offapi.rdb",
+               "idl/XInterface.idl",
+               "idl/xqf.idl",
+               "build/xqf.rdb"],
+               stdout=sys.stdout,
+               stderr=sys.stderr)
 
 # Copy all required files to build folder
 print ("Copying files to build folder")

@@ -1,3 +1,9 @@
+#ifndef __com_qf_api_localc_XQFinance_idl__
+#define __com_qf_api_localc_XQFinance_idl__
+
+#include <com/sun/star/uno/XInterface.idl>
+// https://github.com/LibreOffice/core/raw/refs/heads/master/udkapi/com/sun/star/uno/XInterface.idl
+
 // com.qf.api.localc
 // Naming convention: https://wiki.openoffice.org/wiki/Documentation/DevGuide/AppendixA/General_Design_Rules
 
@@ -7,6 +13,8 @@ module com {
             module localc {
                 interface XQFinance
                 {
+                  interface com::sun::star::uno::XInterface;
+
                   // Returns extension version
                   any QFVersion();
                   // Returns current data source list for a category
@@ -19,7 +27,11 @@ module com {
                   any QFDayVolume( [in] string symbol, [in] string category, [in] any fordate );
                   any QFTTMDividend( [in] string symbol, [in] any fordate );
                 };
+
+                service QFinance : XQFinance;
             };
         };
     };
 };
+
+#endif
