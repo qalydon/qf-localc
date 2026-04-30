@@ -3,3 +3,4 @@ build/
 .DS_Store
 *.oxt
 *.pyc
+idl/XInterface.idl
