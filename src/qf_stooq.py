@@ -58,8 +58,11 @@ class StooqDataSource(DataSourceBase):
                 ticker += QConfiguration.qf_stooq_conf["tickerpostfix"]
             # ticker += ".us"
 
+        # Added on 2026-04-09 based on instructions from Stooq
+        apikey = QConfiguration.qf_stooq_conf["apikey"]
+
         # As of 2018-12-06 this URL consistently returns "No data" as if the request is black-listed
-        url = 'https://stooq.com/q/d/l/?s={0}&d1={1}&d2={1}&i=d'.format(ticker, for_date.replace('-', ''))
+        url = 'https://stooq.com/q/d/l/?s={0}&d1={1}&d2={1}&i=d&apikey={2}'.format(ticker, for_date.replace('-', ''), apikey)
         logger.debug("Calling %s", url)
         try:
             with urllib.request.urlopen(url) as testfile:

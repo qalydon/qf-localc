@@ -50,7 +50,7 @@ a list is tried until data is returned or the list is exhausted.
 ### LibreOffice Compatibility
 The LOCalc addin works on the Windows, macOS and Ubuntu versions of
 [LibreOffice (version >= 5.0)](https://www.libreoffice.org/).
-Testing is performed on the latest general distribution release (currently version 7.1).
+Testing is performed on the latest general distribution release (currently version 25.8).
 
 ### License
 GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007. Refer to the
@@ -132,7 +132,8 @@ The content of the configuration file is JSON and looks something like this
   },
   "stooqconf": 
   {
-        "tickerpostfix": ".us"
+        "tickerpostfix": ".us",
+        "apikey": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
   },
   "tiingoconf":
   {
@@ -193,6 +194,11 @@ while the other sources typically only support stocks and ETFs (e.g. IEX and Sto
 In the future, other data sources may be added.
 
 #### Stooq
+On or about 2026-04-01 Stooq implemented an apikey for website access. You will need to email
+Stooq at www@stooq.com. Your email should describe your project and its use of data. In
+return, Stooq will provide instructions describing how to obtain an apikey. Add your apikey to 
+the configuration file as shown below (see the stooqconf section). 
+
 If you want to use Stooq as your data source, you need to be aware of the ticker
 symbols that it recognizes. By observation, most ticker symbols need to have ".us"
 appended to the normal symbol. For example, the symbol "ibm" would be
@@ -218,7 +224,8 @@ in the configuration file.
   },
   "stooqconf":
   {
-    "tickerpostfix": ".us"
+    "tickerpostfix": ".us",
+    "apikey": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
   }
 }
 ```
